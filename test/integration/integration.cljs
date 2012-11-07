@@ -21,8 +21,7 @@
 
   ;; Assert that the current value is three.
   ;;
-  (assert (= 3 @behavior))
-)
+  (assert (= 3 @behavior)))
 
 ;; Define a behavior which is a function returning two,
 ;; and subsequently define a lift which adds one to the value of
