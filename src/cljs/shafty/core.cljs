@@ -20,7 +20,7 @@
   "Define a signal."
   ([] (Signal. nil nil nil)))
 
-(deftype Lift [signal value-fn state meta watches]
+(deftype Lift [signal name value-fn state meta watches]
   IDeref
   (-deref [_] state)
 
@@ -38,8 +38,8 @@
 
 (defn lift
   "Lift a normal function onto a signal."
-  ([signal value-fn]
-   (let [lift (Lift. signal value-fn nil nil nil)]
-     (-add-watch signal :lift (fn [x y a b]
+  ([signal name value-fn]
+   (let [lift (Lift. signal name value-fn nil nil nil)]
+     (-add-watch signal name (fn [x y a b]
                                 (swap! lift (fn [] (apply value-fn [b])))))
      lift)))
