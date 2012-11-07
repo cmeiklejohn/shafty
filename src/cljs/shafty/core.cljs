@@ -1,5 +1,11 @@
 (ns shafty.core)
 
+(defprotocol IReactive
+  "Event occurance handler."
+  (receive-event! [this occurrence]
+            "Receive a particular event occurrence and apply behavior to
+            event occurrence to generate a new behavior."))
+
 (deftype Behavior [state meta watches]
   IDeref
   (-deref [_] (apply state []))
@@ -14,7 +20,11 @@
   (-add-watch [this key f]
     (set! (.-watches this) (assoc watches key f)))
   (-remove-watch [this key]
-    (set! (.-watches this) (dissoc watches key))))
+    (set! (.-watches this) (dissoc watches key)))
+
+  IReactive
+  (receive-event! [this occurrence]
+    (swap! this (fn [] (apply state [occurrence])))))
 
 (defn behavior
   "Define a behavior."
