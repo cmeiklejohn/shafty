@@ -46,6 +46,23 @@ just an experiment and shouldn't be used in production.
   (swap! behavior (fn [] #(identity 3)))
   (assert (= 3 @behavior))
   (assert (= 4 @lift)))
+
+;; Define a behavior which is a function which needs to be called 5
+;; times before performing an action.
+;;
+(defn threshold
+  ([thr call-fn]
+   #(threshold thr 1 call-fn))
+  ([thr cur call-fn]
+   (if (> cur thr)
+     (do (apply call-fn [])
+       #(threshold thr 1 call-fn))
+     #(threshold thr (inc cur) call-fn))))
+
+(let [behavior (shafty/behavior
+                 (threshold 5 (fn [] (.log js/console "Made it, Ma!"))))]
+  (dotimes [n 6]
+    (shafty/receive-event! behavior n)))
 ```
 
 ## License
