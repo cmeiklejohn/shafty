@@ -1,6 +1,6 @@
 (ns shafty.core)
 
-(deftype Signal [state meta watches]
+(deftype Behavior [state meta watches]
   IDeref
   (-deref [_] state)
 
@@ -16,11 +16,11 @@
   (-remove-watch [this key]
     (set! (.-watches this) (dissoc watches key))))
 
-(defn signal
-  "Define a signal."
-  ([] (Signal. nil nil nil)))
+(defn behavior
+  "Define a behavior."
+  ([] (Behavior. nil nil nil)))
 
-(deftype Lift [signal name value-fn state meta watches]
+(deftype Lift [behavior name value-fn state meta watches]
   IDeref
   (-deref [_] state)
 
@@ -37,9 +37,9 @@
     (set! (.-watches this) (dissoc watches key))))
 
 (defn lift
-  "Lift a normal function onto a signal."
-  ([signal name value-fn]
-   (let [lift (Lift. signal name value-fn nil nil nil)]
-     (-add-watch signal name (fn [x y a b]
+  "Lift a normal function onto a behavior."
+  ([behavior name value-fn]
+   (let [lift (Lift. behavior name value-fn nil nil nil)]
+     (-add-watch behavior name (fn [x y a b]
                                 (swap! lift (fn [] (apply value-fn [b])))))
      lift)))

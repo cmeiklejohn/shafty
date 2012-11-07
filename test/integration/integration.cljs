@@ -1,7 +1,7 @@
 (ns test.integration.integration
   (:require [shafty.core :as shafty]))
 
-(let [s (shafty/signal)
+(let [s (shafty/behavior)
       l (shafty/lift s :add-one (fn [x] (+ 1 x)))]
   (swap! s (fn [] (+ 1 1)))
   (assert (= 2 @s))
