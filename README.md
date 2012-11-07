@@ -56,7 +56,7 @@ just an experiment and shouldn't be used in production.
   ([thr cur call-fn]
    (if (> cur thr)
      (do (apply call-fn [])
-       #(threshold thr 1 call-fn))
+       #(threshold thr call-fn))
      #(threshold thr (inc cur) call-fn))))
 
 (let [behavior (shafty/behavior
