@@ -2,7 +2,7 @@
 
 (deftype Behavior [state meta watches]
   IDeref
-  (-deref [_] state)
+  (-deref [_] (apply state []))
 
   IMeta
   (-meta [_] meta)
@@ -18,7 +18,7 @@
 
 (defn behavior
   "Define a behavior."
-  ([] (Behavior. nil nil nil)))
+  ([x] (Behavior. x nil nil)))
 
 (deftype Lift [behavior name value-fn state meta watches]
   IDeref
@@ -41,5 +41,7 @@
   ([behavior name value-fn]
    (let [lift (Lift. behavior name value-fn nil nil nil)]
      (-add-watch behavior name (fn [x y a b]
-                                (swap! lift (fn [] (apply value-fn [b])))))
+                                 (let [v (apply b [])]
+                                  (swap! lift (fn [] (apply value-fn [v]))))))
+     (swap! lift #(identity (apply value-fn [@behavior])))
      lift)))
