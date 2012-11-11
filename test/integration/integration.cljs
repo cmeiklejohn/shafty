@@ -27,7 +27,7 @@
 ;; and subsequently define a lift which adds one to the value of
 ;; behavior.
 ;;
-(let [behavior (shafty/behavior #(identity 2))
+(let [behavior (shafty/behavior (constantly 2))
       lift (shafty/lift behavior :add-one (fn [x] (+ 1 x)))]
 
   ;; Assert that these values are correct.
@@ -38,7 +38,7 @@
   ;; Change the behavior to a function which returns the identity 3,
   ;; and assert that the values rendered are correct.
   ;;
-  (swap! behavior (fn [] #(identity 3)))
+  (swap! behavior (fn [] (constantly 3)))
   (assert (= 3 @behavior))
   (assert (= 4 @lift)))
 
