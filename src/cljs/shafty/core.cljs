@@ -53,5 +53,5 @@
      (-add-watch behavior name (fn [x y a b]
                                  (let [v (apply b [])]
                                   (swap! lift (fn [] (apply value-fn [v]))))))
-     (swap! lift #(identity (apply value-fn [@behavior])))
+     (swap! lift (constantly (apply value-fn [@behavior])))
      lift)))
