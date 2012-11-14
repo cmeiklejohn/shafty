@@ -63,7 +63,7 @@ XmlHttpRequest.</p>
 <span class="p">(</span><span class="k">def </span><span class="nv">my-combo-event</span> <span class="p">(</span><span class="nf">shafty/merge!</span> <span class="nv">my-filtered-event</span>
                                    <span class="nv">my-mapped-event</span><span class="p">))</span>
 
-<span class="p">(</span><span class="k">def </span><span class="nv">my-delayed-event</span> <span class="p">(</span><span class="nf">shafty/merge!</span> <span class="nv">my-filtered-event</span> <span class="mi">50000</span><span class="p">)</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">my-delayed-event</span> <span class="p">(</span><span class="nf">shafty/delay!</span> <span class="nv">my-filtered-event</span> <span class="mi">50000</span><span class="p">)</span>
 </pre></div>
 
 <h3>Behaviours</h3>
@@ -72,7 +72,14 @@ XmlHttpRequest.</p>
 Derive a behaviour from an event, or generate a receiver to watch a
 particular DOM element, such as an input field.</p>
 
-<div class="highlight"><pre><span class="p">(</span><span class="k">def </span><span class="nv">my-behaviour-of-ones</span> <span class="p">(</span><span class="nf">shafty/hold!</span> <span class="nv">my-filtered-event</span> <span class="mi">2</span><span class="p">))</span>
+<p>Behaviours share the same IEventStream protocol, so you can also use
+merge!, delay!, map!, filter!, etc. to compose them.</p>
+
+<p>You can also call changes! to convert a Behaviour back to an Event.</p>
+
+<div class="highlight"><pre><span class="p">(</span><span class="k">def </span><span class="nv">my-behaviour-of-ones</span> <span class="p">(</span><span class="nf">shafty/hold!</span> <span class="nv">my-filtered-event</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">my-behaviour-as-event</span> <span class="p">(</span><span class="nf">shafty/changes!</span> <span class="nv">my-behaviour-of-ones</span><span class="p">))</span>
 </pre></div>
 
 <h2>TODO</h2>
