@@ -73,7 +73,9 @@
            map-fn.")
   (merge! [this that]
           "Merge supplied event stream and other event stream into one
-          event stream"))
+          event stream")
+  (delay! [this interval]
+          "Delay propagation for interval."))
 
 (extend-type Event
   IEventStream
@@ -101,6 +103,13 @@
       (-add-watch that (gensym "event")
                   (fn [x y a b]
                     (swap! ev #(identity b))))
+      ev))
+
+  (delay! [this interval]
+    (let [ev (event)]
+      (-add-watch this (gensym "event")
+                  (fn [x y a b]
+                    (js/setTimeout (fn [] (swap! ev #(identity b)))) interval))
       ev)))
 
 (extend-type Behaviour
@@ -122,14 +131,21 @@
       be))
 
   (merge! [this that]
-    (let [ev (event)]
-      (-add-watch this (gensym "event")
+    (let [be (behaviour nil)]
+      (-add-watch this (gensym "behaviour")
                   (fn [x y a b]
-                    (swap! ev #(identity b))))
-      (-add-watch that (gensym "event")
+                    (swap! be #(identity b))))
+      (-add-watch that (gensym "behaviour")
                   (fn [x y a b]
-                    (swap! ev #(identity b))))
-      ev)))
+                    (swap! be #(identity b))))
+      be))
+
+  (delay! [this interval]
+    (let [be (behaviour nil)]
+      (-add-watch this (gensym "behaviour")
+                  (fn [x y a b]
+                    (js/setTimeout (fn [] (swap! be #(identity b)))) interval))
+      be)))
 
 ;; Event Conversion
 

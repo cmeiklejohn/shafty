@@ -55,4 +55,15 @@
   (r2 4)
   (assert (= 4 @b1)))
 
+;; Generate a filtered event through a delay and verify delayed
+;; propogation.
+;;
+(let [e1 (shafty/event)
+      r1 (shafty/generate-receiver e1 (fn [x] (identity x)))
+      e3 (shafty/delay! e1 50000)
+      b1 (shafty/hold! e3 0)]
+  (r1 1)
+  (assert (= 0 @b1))
+  (js/setTimeout (fn [] (assert (= 1 @b1)) 50000)))
+
 (.log js/console "Ending Tests")

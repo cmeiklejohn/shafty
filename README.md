@@ -34,6 +34,8 @@ Compose event streams using filter!, map!, reduce!, etc.
 
 (def my-combo-event (shafty/merge! my-filtered-event
                                    my-mapped-event))
+
+(def my-delayed-event (shafty/merge! my-filtered-event 50000)
 ```
 
 ### Behaviours
@@ -51,7 +53,7 @@ particular DOM element, such as an input field.
 * Add to IEventStream:
   * reduce!
   * ~~merge!~~
-  * delay!
+  * ~~delay!~~
 * Should we abandon watchers?
 * Should we refactor swap! calls with -notify-watcher calls. Likely.
 * When we propagate records forward, we want to call an update-fn.
