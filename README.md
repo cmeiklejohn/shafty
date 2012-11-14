@@ -4,6 +4,8 @@ Prototype ClojureScript functional reactive programming library. Shafty
 is just an experiment and shouldn't be used in production.  Shafty is
 currently in development.
 
+Get in touch if you are interested in helping out.
+
 ## Usage
 
 ### Events
@@ -33,6 +35,8 @@ Compose event streams using filter!, map!, reduce!, etc.
 (def my-combo-event (shafty/merge! my-filtered-event my-mapped-event))
 ```
 
+### Behaviours
+
 Behaviours are time-varying functions which constantly have a value.
 Derive a behaviour from an event, or generate a receiver to watch a
 particular DOM element, such as an input field.
@@ -43,15 +47,16 @@ particular DOM element, such as an input field.
 
 ## TODO
 
-* Don't use watchers, store a sink of nodes to propgate forward to, and
-  call a selection-fn on the members of the sink.
-* Investigate adding sources vector to Event/Behaviour.
 * Add to IEventStream:
   * reduce!
   * ~~merge!~~
   * delay!
-* Behaviours value should only change when deref'd?
-* Text box save example.
+* Should we abandon watchers?
+* Should we refactor swap! calls with -notify-watcher calls. Likely.
+* When we propagate records forward, we want to call an update-fn.
+* Example applications:
+  * Text box auto-save
+  * Timer with reset button
 
 ## License
 
