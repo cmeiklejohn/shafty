@@ -35,7 +35,7 @@ Compose event streams using filter!, map!, reduce!, etc.
 (def my-combo-event (shafty/merge! my-filtered-event
                                    my-mapped-event))
 
-(def my-delayed-event (shafty/merge! my-filtered-event 50000)
+(def my-delayed-event (shafty/delay! my-filtered-event 50000)
 ```
 
 ### Behaviours
@@ -44,8 +44,15 @@ Behaviours are time-varying functions which constantly have a value.
 Derive a behaviour from an event, or generate a receiver to watch a
 particular DOM element, such as an input field.
 
+Behaviours share the same IEventStream protocol, so you can also use
+merge!, delay!, map!, filter!, etc. to compose them.
+
+You can also call changes! to convert a Behaviour back to an Event.
+
 ```clojure
-(def my-behaviour-of-ones (shafty/hold! my-filtered-event 2))
+(def my-behaviour-of-ones (shafty/hold! my-filtered-event 1))
+
+(def my-behaviour-as-event (shafty/changes! my-behaviour-of-ones))
 ```
 
 ## TODO
