@@ -3,59 +3,38 @@
 
 (.log js/console "Starting Tests")
 
-;; Create an event.
-(def my-event (shafty/event))
+;; Generate a series of events, and verify that after all changes have
+;; propgated a filtered event only contains the correct values.
+;;
+(let [e1 (shafty/event)
+      r1 (shafty/generate-receiver e1 (fn [x] (identity x)))
+      e2 (shafty/filter! e1 (fn [x] (= 1 x)))
+      e3 (shafty/map! e2 (fn [x] (assert (= 1 x))))]
+  (r1 2)
+  (r1 1)
+  (r1 1))
 
-;; Generate a receiver, and send events to it.
-(def my-event-receiver (shafty/generate-receiver my-event
-                                          (fn [x]
-                                            (.log js/console (str "Event selector called with " x))
-                                            (identity x))))
+;; Generate a series of events, and verify that after all changes have
+;; propgated a mapped event only contains the correct values.
+;;
+(let [e1 (shafty/event)
+      r1 (shafty/generate-receiver e1 (fn [x] (identity x)))
+      e2 (shafty/map! e1 (fn [x] (identity 3)))
+      e3 (shafty/map! e2 (fn [x] (assert (= 3 x))))]
+  (r1 2)
+  (r1 1)
+  (r1 1))
 
-;; Filter events into a new stream that are equal to the value 1.
-(def my-filtered-event (shafty/filter! my-event
-                                (fn [x]
-                                  (.log js/console (str "Filter called with " x))
-                                  (= 1 x))))
-
-;; Map events into a new stream with the identity of 1.
-(def my-mapped-event (shafty/map! my-event
-                           (fn [x]
-                             (.log js/console (str "Map called with " x))
-                             (identity 1))))
-
-;; Map mapped into a new stream and perform assertions that all received values
-;; are 1.
-(def my-secondary-mapped-event (shafty/filter! my-mapped-event
-                                        (fn [x]
-                                          (.log js/console (str "Secondary map called with " x))
-                                          (assert (= 1 x)))))
-
-;; Map filtered into a new stream and perform assertions that all received values
-;; are 1.
-(def my-secondary-filtered-event (shafty/filter! my-mapped-event
-                                          (fn [x]
-                                            (.log js/console (str "Secondary filter called with " x))
-                                            (assert (= 1 x)))))
-
-;; Convert event stream into a behavior.
-(def my-behaviour-of-ones (shafty/hold! my-filtered-event 2))
-
-;; Convert behaviour back into an event stream and map it with
-;; assertions.
-(def my-event-from-behaviour (shafty/changes! my-behaviour-of-ones))
-
-(def my-mapped-event-from-behaviour (shafty/filter! my-event-from-behaviour
-                                        (fn [x]
-                                          (.log js/console (str "Mapped behaviour called with " x))
-                                          (assert (= 1 x)))))
-
-;; Send events.
-(my-event-receiver 1)
-(my-event-receiver 2)
-(my-event-receiver 1)
-
-;; Assert behavior has the correct value.
-(assert (= 1 @my-behaviour-of-ones))
+;; Generate a series of events, hold to a behaviour, and assert that the
+;; behaviour deref's to the correct value.
+;;
+(let [e1 (shafty/event)
+      r1 (shafty/generate-receiver e1 (fn [x] (identity x)))
+      e2 (shafty/map! e1 (fn [x] (identity 3)))
+      b1 (shafty/hold! e2 nil)]
+  (r1 2)
+  (r1 1)
+  (r1 1)
+  (assert (= 3 @b1)))
 
 (.log js/console "Ending Tests")

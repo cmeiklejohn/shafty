@@ -28,6 +28,7 @@
 (defn behaviour
   "Define a behaviour, which is a time-varying value providing constant
   values."
+  ([] (Behaviour. nil nil))
   ([x] (Behaviour. x nil)))
 
 (defn event
