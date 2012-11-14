@@ -60,7 +60,10 @@ XmlHttpRequest.</p>
 <span class="p">(</span><span class="k">def </span><span class="nv">my-mapped-event</span> <span class="p">(</span><span class="nf">shafty/map!</span> <span class="nv">my-event</span>
                            <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nb">identity </span><span class="mi">1</span><span class="p">))))</span>
 
-<span class="p">(</span><span class="k">def </span><span class="nv">my-combo-event</span> <span class="p">(</span><span class="nf">shafty/merge!</span> <span class="nv">my-filtered-event</span> <span class="nv">my-mapped-event</span><span class="p">))</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">my-combo-event</span> <span class="p">(</span><span class="nf">shafty/merge!</span> <span class="nv">my-filtered-event</span>
+                                   <span class="nv">my-mapped-event</span><span class="p">))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">my-delayed-event</span> <span class="p">(</span><span class="nf">shafty/merge!</span> <span class="nv">my-filtered-event</span> <span class="mi">50000</span><span class="p">)</span>
 </pre></div>
 
 <h3>Behaviours</h3>
@@ -80,7 +83,7 @@ particular DOM element, such as an input field.</p>
 <ul>
 <li>reduce!</li>
 <li><del>merge!</del></li>
-<li>delay!</li>
+<li><del>delay!</del></li>
 </ul>
 </li>
 <li>Should we abandon watchers?</li>
