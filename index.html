@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Shafty by cmeiklejohn</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Shafty</h1>
+        <p>Prototype ClojureScript functional reactive programming library.</p>
+
+        <p class="view"><a href="https://github.com/cmeiklejohn/shafty">View the Project on GitHub <small>cmeiklejohn/shafty</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/cmeiklejohn/shafty/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/cmeiklejohn/shafty/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/cmeiklejohn/shafty">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>shafty</h1>
+
+<p>Prototype ClojureScript functional reactive programming library. Shafty
+is just an experiment and shouldn't be used in production.  Shafty is
+currently in development.</p>
+
+<h2>Usage</h2>
+
+<h3>Events</h3>
+
+<p>Events represent time-varying functions which have a finite set of
+occurences over time.  Create an event and generate a receiver for the
+event, which can either be bound to a DOM element via an
+addEventListener, set as the callback for a timer, or a result of an
+XmlHttpRequest.</p>
+
+<div class="highlight"><pre><span class="p">(</span><span class="k">def </span><span class="nv">my-event</span> <span class="p">(</span><span class="nf">shafty/event</span><span class="p">))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">my-event-receiver</span> <span class="p">(</span><span class="nf">shafty/generate-receiver</span> <span class="nv">my-event</span>
+                                          <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nb">identity </span><span class="nv">x</span><span class="p">))))</span>
+</pre></div>
+
+<p>Compose event streams using filter!, map!, reduce!, etc.</p>
+
+<div class="highlight"><pre><span class="p">(</span><span class="k">def </span><span class="nv">my-filtered-event</span> <span class="p">(</span><span class="nf">shafty/filter!</span> <span class="nv">my-event</span>
+                                <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nb">= </span><span class="mi">1</span> <span class="nv">x</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">my-mapped-event</span> <span class="p">(</span><span class="nf">shafty/map!</span> <span class="nv">my-event</span>
+                           <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nb">identity </span><span class="mi">1</span><span class="p">))))</span>
+</pre></div>
+
+<p>Behaviours are time-varying functions which constantly have a value.
+Derive a behaviour from an event, or generate a receiver to watch a
+particular DOM element, such as an input field.</p>
+
+<div class="highlight"><pre><span class="p">(</span><span class="k">def </span><span class="nv">my-behaviour-of-ones</span> <span class="p">(</span><span class="nf">shafty/hold!</span> <span class="nv">my-filtered-event</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+
+<h2>TODO</h2>
+
+<ul>
+<li>Don't use watchers, store a sink of nodes to propgate forward to, and
+call a selection-fn on the members of the sink.</li>
+<li>Investigate adding sources vector to Event/Behaviour.</li>
+<li>Add to IEventStream:
+
+<ul>
+<li>reduce!</li>
+<li>merge!</li>
+<li>delay!</li>
+</ul>
+</li>
+<li>Behaviours value should only change when deref'd?</li>
+<li>Text box save example.</li>
+</ul><h2>License</h2>
+
+<p>Copyright (C) 2012 Christopher Meiklejohn.</p>
+
+<p>Distributed under the Eclipse Public License, the same as Clojure.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/cmeiklejohn">cmeiklejohn</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
