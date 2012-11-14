@@ -119,7 +119,17 @@
       (-add-watch this (gensym "behaviour")
                   (fn [x y a b]
                     (swap! be #(apply map-fn [b]))))
-      be)))
+      be))
+
+  (merge! [this that]
+    (let [ev (event)]
+      (-add-watch this (gensym "event")
+                  (fn [x y a b]
+                    (swap! ev #(identity b))))
+      (-add-watch that (gensym "event")
+                  (fn [x y a b]
+                    (swap! ev #(identity b))))
+      ev)))
 
 ;; Event Conversion
 
