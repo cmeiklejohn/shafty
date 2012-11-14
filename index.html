@@ -57,6 +57,8 @@ XmlHttpRequest.</p>
 
 <span class="p">(</span><span class="k">def </span><span class="nv">my-mapped-event</span> <span class="p">(</span><span class="nf">shafty/map!</span> <span class="nv">my-event</span>
                            <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nb">identity </span><span class="mi">1</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">my-combo-event</span> <span class="p">(</span><span class="nf">shafty/merge!</span> <span class="nv">my-filtered-event</span> <span class="nv">my-mapped-event</span><span class="p">))</span>
 </pre></div>
 
 <p>Behaviours are time-varying functions which constantly have a value.
