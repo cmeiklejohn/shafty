@@ -29,6 +29,8 @@ Compose event streams using filter!, map!, reduce!, etc.
 
 (def my-mapped-event (shafty/map! my-event
                            (fn [x] (identity 1))))
+
+(def my-combo-event (shafty/merge! my-filtered-event my-mapped-event))
 ```
 
 Behaviours are time-varying functions which constantly have a value.
