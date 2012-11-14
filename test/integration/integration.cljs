@@ -1,60 +1,61 @@
 (ns test.integration.integration
   (:require [shafty.core :as shafty]))
 
-;; Define a behavior which is a function which returns functions of
-;; increasing integers, but returns the value of the current integer
-;; when deref'd.
-;;
-(defn incr
-  ([val] val)
-  ([val incr-by] #(+ val incr-by)))
+(.log js/console "Starting Tests")
 
-(let [behavior (shafty/behavior (partial incr 1))]
+;; Create an event.
+(def my-event (shafty/event))
 
-  ;; Assert that the current value is one.
-  ;;
-  (assert (= 1 @behavior))
+;; Generate a receiver, and send events to it.
+(def my-event-receiver (shafty/generate-receiver my-event
+                                          (fn [x]
+                                            (.log js/console (str "Event selector called with " x))
+                                            (identity x))))
 
-  ;; Receive an event from the event stream.
-  ;;
-  (shafty/receive-event! behavior 2)
+;; Filter events into a new stream that are equal to the value 1.
+(def my-filtered-event (shafty/filter! my-event
+                                (fn [x]
+                                  (.log js/console (str "Filter called with " x))
+                                  (= 1 x))))
 
-  ;; Assert that the current value is three.
-  ;;
-  (assert (= 3 @behavior)))
+;; Map events into a new stream with the identity of 1.
+(def my-mapped-event (shafty/map! my-event
+                           (fn [x]
+                             (.log js/console (str "Map called with " x))
+                             (identity 1))))
 
-;; Define a behavior which is a function returning two,
-;; and subsequently define a lift which adds one to the value of
-;; behavior.
-;;
-(let [behavior (shafty/behavior (constantly 2))
-      lift (shafty/lift behavior :add-one (fn [x] (+ 1 x)))]
+;; Map mapped into a new stream and perform assertions that all received values
+;; are 1.
+(def my-secondary-mapped-event (shafty/filter! my-mapped-event
+                                        (fn [x]
+                                          (.log js/console (str "Secondary map called with " x))
+                                          (assert (= 1 x)))))
 
-  ;; Assert that these values are correct.
-  ;;
-  (assert (= 2 @behavior))
-  (assert (= 3 @lift))
+;; Map filtered into a new stream and perform assertions that all received values
+;; are 1.
+(def my-secondary-filtered-event (shafty/filter! my-mapped-event
+                                          (fn [x]
+                                            (.log js/console (str "Secondary filter called with " x))
+                                            (assert (= 1 x)))))
 
-  ;; Change the behavior to a function which returns the identity 3,
-  ;; and assert that the values rendered are correct.
-  ;;
-  (swap! behavior (fn [] (constantly 3)))
-  (assert (= 3 @behavior))
-  (assert (= 4 @lift)))
+;; Convert event stream into a behavior.
+(def my-behaviour-of-ones (shafty/hold! my-filtered-event 2))
 
-;; Define a behavior which is a function which needs to be called 5
-;; times before performing an action.
-;;
-(defn threshold
-  ([thr call-fn]
-   #(threshold thr 1 call-fn))
-  ([thr cur call-fn]
-   (if (> cur thr)
-     (do (apply call-fn [])
-       #(threshold thr call-fn))
-     #(threshold thr (inc cur) call-fn))))
+;; Convert behaviour back into an event stream and map it with
+;; assertions.
+(def my-event-from-behaviour (shafty/changes! my-behaviour-of-ones))
 
-(let [behavior (shafty/behavior
-                 (threshold 5 (fn [] (.log js/console "Made it, Ma!"))))]
-  (dotimes [n 6]
-    (shafty/receive-event! behavior n)))
+(def my-mapped-event-from-behaviour (shafty/filter! my-event-from-behaviour
+                                        (fn [x]
+                                          (.log js/console (str "Mapped behaviour called with " x))
+                                          (assert (= 1 x)))))
+
+;; Send events.
+(my-event-receiver 1)
+(my-event-receiver 2)
+(my-event-receiver 1)
+
+;; Assert behavior has the correct value.
+(assert (= 1 @my-behaviour-of-ones))
+
+(.log js/console "Ending Tests")
