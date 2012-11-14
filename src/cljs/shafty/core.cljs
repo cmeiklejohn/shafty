@@ -14,16 +14,22 @@
 (defprotocol IEventStream
   "The event stream interface provides a series of filtering and
   selection methods for working with objects as they enter and leave the
-  event stream"
+  event stream."
   (filter! [this filter-fn]
            "Filter the objects of the event stream using the provided
-           filter-fn")
+           filter-fn.")
   (map! [this map-fn]
            "Map the objects of the event stream using the provided
-           map"))
+           map-fn."))
+
+(defprotocol IEventConversion
+  "Convert a behaviour back to an event stream."
+  (changes! [this]
+            "Given a behaviour, convert the behaviour back to an event
+            stream."))
 
 (defprotocol IBehaviourConversion
-  "Convert an event stream into a behaviour initializing with a default value"
+  "Convert an event stream into a behaviour initializing with a default value."
   (hold! [this init]
          "Given an initial value, create a behaviour from an event stream."))
 
@@ -35,9 +41,17 @@
   (generate-receiver [this select-fn]
     (fn [event] (swap! this #(apply select-fn [event]))))
 
+  IEventConversion
+  (changes! [this]
+    (let [ev (event)]
+      (-add-watch this (gensym "event")
+                  (fn [x y a b]
+                    (swap! ev (constantly b))))
+      ev))
+
   IEventStream
   (filter! [this filter-fn]
-    (let [e (Behaviour. nil nil)]
+    (let [e (behaviour nil)]
       (-add-watch this (gensym "event")
                   (fn [x y a b]
                     (let [r (apply filter-fn [b])]
@@ -46,12 +60,11 @@
       e))
 
   (map! [this map-fn]
-    (let [e (Behaviour. nil nil)]
+    (let [e (behaviour nil)]
       (-add-watch this (gensym "event")
                   (fn [x y a b]
                     (swap! e #(apply map-fn [b]))))
       e))
-
 
   IWatchable
   (-notify-watches [this oldval newval]
@@ -69,7 +82,6 @@
 
   IBehaviourConversion
   (hold! [this init]
-    (.log js/console (str "init at " init))
     (let [be (Behaviour. init nil)]
       (-add-watch this (gensym "behaviour")
                   (fn [x y a b]
@@ -78,7 +90,7 @@
 
   IEventStream
   (filter! [this filter-fn]
-    (let [ev (Event. nil)]
+    (let [ev (event nil)]
       (-add-watch this (gensym "event")
                   (fn [x y a b]
                     (let [r (apply filter-fn [b])]
@@ -87,7 +99,7 @@
       ev))
 
   (map! [this map-fn]
-    (let [ev (Event. nil)]
+    (let [ev (event nil)]
       (-add-watch this (gensym "event")
                   (fn [x y a b]
                     (swap! ev #(apply map-fn [b]))))

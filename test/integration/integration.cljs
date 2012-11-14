@@ -41,6 +41,15 @@
 ;; Convert event stream into a behavior.
 (def my-behaviour-of-ones (shafty/hold! my-filtered-event 2))
 
+;; Convert behaviour back into an event stream and map it with
+;; assertions.
+(def my-event-from-behaviour (shafty/changes! my-behaviour-of-ones))
+
+(def my-mapped-event-from-behaviour (shafty/filter! my-event-from-behaviour
+                                        (fn [x]
+                                          (.log js/console (str "Mapped behaviour called with " x))
+                                          (assert (= 1 x)))))
+
 ;; Send events.
 (my-event-receiver 1)
 (my-event-receiver 2)
