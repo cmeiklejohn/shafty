@@ -34,6 +34,8 @@
 is just an experiment and shouldn't be used in production.  Shafty is
 currently in development.</p>
 
+<p>Get in touch if you are interested in helping out.</p>
+
 <h2>Usage</h2>
 
 <h3>Events</h3>
@@ -61,6 +63,8 @@ XmlHttpRequest.</p>
 <span class="p">(</span><span class="k">def </span><span class="nv">my-combo-event</span> <span class="p">(</span><span class="nf">shafty/merge!</span> <span class="nv">my-filtered-event</span> <span class="nv">my-mapped-event</span><span class="p">))</span>
 </pre></div>
 
+<h3>Behaviours</h3>
+
 <p>Behaviours are time-varying functions which constantly have a value.
 Derive a behaviour from an event, or generate a receiver to watch a
 particular DOM element, such as an input field.</p>
@@ -71,9 +75,6 @@ particular DOM element, such as an input field.</p>
 <h2>TODO</h2>
 
 <ul>
-<li>Don't use watchers, store a sink of nodes to propgate forward to, and
-call a selection-fn on the members of the sink.</li>
-<li>Investigate adding sources vector to Event/Behaviour.</li>
 <li>Add to IEventStream:
 
 <ul>
@@ -82,8 +83,16 @@ call a selection-fn on the members of the sink.</li>
 <li>delay!</li>
 </ul>
 </li>
-<li>Behaviours value should only change when deref'd?</li>
-<li>Text box save example.</li>
+<li>Should we abandon watchers?</li>
+<li>Should we refactor swap! calls with -notify-watcher calls. Likely.</li>
+<li>When we propagate records forward, we want to call an update-fn.</li>
+<li>Example applications:
+
+<ul>
+<li>Text box auto-save</li>
+<li>Timer with reset button</li>
+</ul>
+</li>
 </ul><h2>License</h2>
 
 <p>Copyright (C) 2012 Christopher Meiklejohn.</p>
