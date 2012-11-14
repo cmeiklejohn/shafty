@@ -70,7 +70,10 @@
            filter-fn.")
   (map! [this map-fn]
            "Map the objects of the event stream using the provided
-           map-fn."))
+           map-fn.")
+  (merge! [this that]
+          "Merge supplied event stream and other event stream into one
+          event stream"))
 
 (extend-type Event
   IEventStream
@@ -88,6 +91,16 @@
       (-add-watch this (gensym "event")
                   (fn [x y a b]
                     (swap! ev #(apply map-fn [b]))))
+      ev))
+
+  (merge! [this that]
+    (let [ev (event)]
+      (-add-watch this (gensym "event")
+                  (fn [x y a b]
+                    (swap! ev #(identity b))))
+      (-add-watch that (gensym "event")
+                  (fn [x y a b]
+                    (swap! ev #(identity b))))
       ev)))
 
 (extend-type Behaviour

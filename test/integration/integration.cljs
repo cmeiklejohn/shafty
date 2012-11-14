@@ -37,4 +37,22 @@
   (r1 1)
   (assert (= 3 @b1)))
 
+;; Generate multiple event streams, merge into one, hold into a
+;; behaviour and verify that all events are received.
+;;
+(let [e1 (shafty/event)
+      r1 (shafty/generate-receiver e1 (fn [x] (identity x)))
+      e2 (shafty/event)
+      r2 (shafty/generate-receiver e2 (fn [x] (identity x)))
+      e3 (shafty/merge! e1 e2)
+      b1 (shafty/hold! e3 0)]
+  (r1 1)
+  (assert (= 1 @b1))
+  (r2 2)
+  (assert (= 2 @b1))
+  (r1 3)
+  (assert (= 3 @b1))
+  (r2 4)
+  (assert (= 4 @b1)))
+
 (.log js/console "Ending Tests")

@@ -46,7 +46,7 @@ particular DOM element, such as an input field.
 * Investigate adding sources vector to Event/Behaviour.
 * Add to IEventStream:
   * reduce!
-  * merge!
+  * ~~merge!~~
   * delay!
 * Behaviours value should only change when deref'd?
 * Text box save example.
