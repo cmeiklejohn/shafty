@@ -65,7 +65,7 @@ You can also call changes! to convert a Behaviour back to an Event.
 * Should we refactor swap! calls with -notify-watcher calls. Likely.
 * When we propagate records forward, we want to call an update-fn.
 * Example applications:
-  * Text box auto-save
+  * ~~Text box auto-save~~
   * Timer with reset button
 
 ## License

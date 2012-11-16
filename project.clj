@@ -11,6 +11,10 @@
                        :core {:source-path "src/cljs"
                               :compiler {:output-to "resources/private/core.js"
                                          :optimizations :whitespace
-                                         :pretty-print true}}}
+                                         :pretty-print true}}
+                       :examples {:source-path "src/cljs"
+                                  :compiler {:output-to "resources/public/examples.js"
+                                             :optimizations :whitespace
+                                             :pretty-print true}}}
             :test-commands {"integration" ["phantomjs"
                                            "test/integration/runner.coffee"]}})

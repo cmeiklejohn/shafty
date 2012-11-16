@@ -10,3 +10,4 @@
 /.lein-cljsbuild-*
 /resources/private/integration.js
 /resources/private/core.js
+/resources/public/examples.js
