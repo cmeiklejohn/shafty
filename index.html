@@ -41,15 +41,9 @@ currently in development.</p>
 <h3>Events</h3>
 
 <p>Events represent time-varying functions which have a finite set of
-occurences over time.  Create an event and generate a receiver for the
-event, which can either be bound to a DOM element via an
-addEventListener, set as the callback for a timer, or a result of an
-XmlHttpRequest.</p>
+occurences over time.</p>
 
 <div class="highlight"><pre><span class="p">(</span><span class="k">def </span><span class="nv">my-event</span> <span class="p">(</span><span class="nf">shafty/event</span><span class="p">))</span>
-
-<span class="p">(</span><span class="k">def </span><span class="nv">my-event-receiver</span> <span class="p">(</span><span class="nf">shafty/generate-receiver</span> <span class="nv">my-event</span>
-                                          <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nb">identity </span><span class="nv">x</span><span class="p">))))</span>
 </pre></div>
 
 <p>Compose event streams using filter!, map!, reduce!, etc.</p>
@@ -93,13 +87,13 @@ merge!, delay!, map!, filter!, etc. to compose them.</p>
 <li><del>delay!</del></li>
 </ul>
 </li>
-<li>Should we abandon watchers?</li>
-<li>Should we refactor swap! calls with -notify-watcher calls. Likely.</li>
-<li>When we propagate records forward, we want to call an update-fn.</li>
+<li><del>Should we abandon watchers? <em>No.</em></del></li>
+<li><del>Should we refactor swap! calls with -notify-watcher calls. Likely.</del></li>
+<li><del>When we propagate records forward, we want to call an update-fn.</del></li>
 <li>Example applications:
 
 <ul>
-<li>Text box auto-save</li>
+<li><del>Text box auto-save</del></li>
 <li>Timer with reset button</li>
 </ul>
 </li>
