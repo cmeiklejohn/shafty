@@ -1,8 +1,6 @@
 (ns shafty.core)
 
-;; Core
-
-(deftype Behaviour [state watches]
+(deftype Behaviour [state stream watches]
   IDeref
   (-deref [_] state)
 
@@ -15,7 +13,7 @@
   (-remove-watch [this key]
     (set! (.-watches this) (dissoc watches key))))
 
-(deftype Event [watches]
+(deftype Event [sinks sources watches]
   IWatchable
   (-notify-watches [this oldval newval]
     (doseq [[key f] watches]
@@ -25,46 +23,12 @@
   (-remove-watch [this key]
     (set! (.-watches this) (dissoc watches key))))
 
-(defn behaviour
-  "Define a behaviour, which is a time-varying value providing constant
-  values."
-  ([] (Behaviour. nil nil))
-  ([x] (Behaviour. x nil)))
-
-(defn event
-  "Define an event, which is a time-varying value with finite
-  occurences."
-  ([] (Event. nil)))
-
-;; Raw Event Receiver
-
-(defprotocol IRawEventReceiver
-  "The raw event receiver interface provides a mechanism to generate
-  functions which can be the target of DOM, XHR or other events which
-  add an object to the event stream."
-  (generate-receiver [this select-fn]
-                      "Generate a receiver function which can be used as
-                      the target of an addEventReceiver, or an
-                      XmlHttpRequest response.  When called, the result
-                      of the select-fn applied to the event will be
-                      added to the event stream."))
-
-(extend-type Event
-  IRawEventReceiver
-  (generate-receiver [this select-fn]
-    (fn [event] (swap! this #(apply select-fn [event])))))
-
-(extend-type Behaviour
-  IRawEventReceiver
-  (generate-receiver [this select-fn]
-    (fn [event] (swap! this #(apply select-fn [event])))))
-
-;; Event Stream
-
-(defprotocol IEventStream
-  "The event stream interface provides a series of filtering and
+(defprotocol IComposableEventStream
+  "The composable stream interface provides a series of filtering and
   selection methods for working with objects as they enter and leave the
   event stream."
+  (propagate! [this value]
+              "Propagate the value to all of the sinks.")
   (filter! [this filter-fn]
            "Filter the objects of the event stream using the provided
            filter-fn.")
@@ -77,77 +41,53 @@
   (delay! [this interval]
           "Delay propagation for interval."))
 
+(defn event
+  "Define an event, which is a time-varying value with finite
+  occurences."
+  ([]
+   (let [e (Event. [] [] nil)]
+     (-add-watch e (gensym "watch") (fn [x y a b] (propagate! e b))) e))
+  ([update-fn]
+   (let [e (Event. [] [] nil)]
+     (-add-watch e (gensym "watch") (partial update-fn e)) e)))
+
+(defn behaviour
+  "Define a behaviour, which is a time-varying value providing constant
+  values."
+  ([state stream]
+   (let [e (Behaviour. state stream nil)]
+     (-add-watch e (gensym "watch") (fn [x y a b] (set! (.-state e) b))) e)))
+
 (extend-type Event
-  IEventStream
-  (filter! [this filter-fn]
-    (let [ev (event)]
-      (-add-watch this (gensym "event")
-                  (fn [x y a b]
-                    (let [r (apply filter-fn [b])]
-                      (if (true? r)
-                        (swap! ev #(identity b))))))
-      ev))
+  IComposableEventStream
+  (propagate! [this value]
+    (let [sinks (.-sinks this)]
+      (doall (map (fn [x] (-notify-watches x nil value)) sinks))))
 
-  (map! [this map-fn]
-    (let [ev (event)]
-      (-add-watch this (gensym "event")
-                  (fn [x y a b]
-                    (swap! ev #(apply map-fn [b]))))
-      ev))
+  (filter! [this filter-fn]
+    (let [e (event (fn [me x y a b]
+                     (let [v (apply filter-fn [b])]
+                       (if (true? v) (propagate! me b)))))]
+      (set! (.-sinks this) (conj (.-sinks this) e))
+      e))
 
   (merge! [this that]
-    (let [ev (event)]
-      (-add-watch this (gensym "event")
-                  (fn [x y a b]
-                    (swap! ev #(identity b))))
-      (-add-watch that (gensym "event")
-                  (fn [x y a b]
-                    (swap! ev #(identity b))))
-      ev))
-
-  (delay! [this interval]
-    (let [ev (event)]
-      (-add-watch this (gensym "event")
-                  (fn [x y a b]
-                    (js/setTimeout (fn [] (swap! ev #(identity b)))) interval))
-      ev)))
-
-(extend-type Behaviour
-  IEventStream
-  (filter! [this filter-fn]
-    (let [be (behaviour nil)]
-      (-add-watch this (gensym "behaviour")
-                  (fn [x y a b]
-                    (let [r (apply filter-fn [b])]
-                      (if (true? r)
-                        (swap! be #(identity b))))))
-      be))
+    (let [e (event)]
+      (set! (.-sinks this) (conj (.-sinks this) e))
+      (set! (.-sinks that) (conj (.-sinks that) e))
+      e))
 
   (map! [this map-fn]
-    (let [be (behaviour nil)]
-      (-add-watch this (gensym "behaviour")
-                  (fn [x y a b]
-                    (swap! be #(apply map-fn [b]))))
-      be))
-
-  (merge! [this that]
-    (let [be (behaviour nil)]
-      (-add-watch this (gensym "behaviour")
-                  (fn [x y a b]
-                    (swap! be #(identity b))))
-      (-add-watch that (gensym "behaviour")
-                  (fn [x y a b]
-                    (swap! be #(identity b))))
-      be))
+    (let [e (event (fn [me x y a b]
+                       (propagate! me (apply map-fn [b]))))]
+      (set! (.-sinks this) (conj (.-sinks this) e))
+      e))
 
   (delay! [this interval]
-    (let [be (behaviour nil)]
-      (-add-watch this (gensym "behaviour")
-                  (fn [x y a b]
-                    (js/setTimeout (fn [] (swap! be #(identity b)))) interval))
-      be)))
-
-;; Event Conversion
+    (let [e (event (fn [me x y a b]
+                       (js/setTimeout (fn [] (propagate! me b)) interval)))]
+      (set! (.-sinks this) (conj (.-sinks this) e))
+      e)))
 
 (defprotocol IEventConversion
   "Convert a behaviour back to an event stream."
@@ -157,14 +97,7 @@
 
 (extend-type Behaviour
   IEventConversion
-  (changes! [this]
-    (let [ev (event)]
-      (-add-watch this (gensym "event")
-                  (fn [x y a b]
-                    (swap! ev (constantly b))))
-      ev)))
-
-;; Behaviour Conversion
+  (changes! [this] (.-stream this)))
 
 (defprotocol IBehaviourConversion
   "Convert an event stream into a behaviour initializing with a default value."
@@ -174,8 +107,5 @@
 (extend-type Event
   IBehaviourConversion
   (hold! [this init]
-    (let [be (Behaviour. init nil)]
-      (-add-watch this (gensym "behaviour")
-                  (fn [x y a b]
-                    (swap! be (constantly b))))
-      be)))
+    (let [b (behaviour init this)]
+      (set! (.-sinks this) (conj (.-sinks this) b)) b)))
