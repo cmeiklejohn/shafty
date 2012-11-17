@@ -1,6 +1,6 @@
 (ns shafty.core)
 
-(deftype Behaviour [state sinks sources watches]
+(deftype Behaviour [state stream watches]
   IDeref
   (-deref [_] state)
 
@@ -54,12 +54,9 @@
 (defn behaviour
   "Define a behaviour, which is a time-varying value providing constant
   values."
-  ([]
-   (let [e (Behaviour. nil [] [] nil)]
-     (-add-watch e (gensym "watch") (fn [x y a b] (propagate! e b))) e))
-  ([x]
-   (let [e (Behaviour. x [] [] nil)]
-     (-add-watch e (gensym "watch") (fn [x y a b] (propagate! e b))) e)))
+  ([state stream]
+   (let [e (Behaviour. state stream nil)]
+     (-add-watch e (gensym "watch") (fn [x y a b] (set! (.-state e) b))) e)))
 
 (extend-type Event
   IComposableEventStream
@@ -88,38 +85,6 @@
 
   (delay! [this interval]
     (let [e (event (fn [me x y a b]
-                       (js/setTimeout (fn [] (propagate! me b)) interval)))]
-      (set! (.-sinks this) (conj (.-sinks this) e))
-      e)))
-
-(extend-type Behaviour
-  IComposableEventStream
-  (propagate! [this value]
-    (set! (.-state this) value)
-    (let [sinks (.-sinks this)]
-      (doall (map (fn [x] (-notify-watches x nil value)) sinks))))
-
-  (filter! [this filter-fn]
-    (let [e (behaviour (fn [me x y a b]
-                     (let [v (apply filter-fn [b])]
-                       (if (true? v) (propagate! me b)))))]
-      (set! (.-sinks this) (conj (.-sinks this) e))
-      e))
-
-  (merge! [this that]
-    (let [e (behaviour)]
-      (set! (.-sinks this) (conj (.-sinks this) e))
-      (set! (.-sinks that) (conj (.-sinks that) e))
-      e))
-
-  (map! [this map-fn]
-    (let [e (behaviour (fn [me x y a b]
-                       (propagate! me (apply map-fn [b]))))]
-      (set! (.-sinks this) (conj (.-sinks this) e))
-      e))
-
-  (delay! [this interval]
-    (let [e (behaviour (fn [me x y a b]
                        (js/setTimeout (fn [] (propagate! me b)) interval)))]
       (set! (.-sinks this) (conj (.-sinks this) e))
       e)))
@@ -132,9 +97,7 @@
 
 (extend-type Behaviour
   IEventConversion
-  (changes! [this]
-    (let [e (event)]
-      (set! (.-sinks this) (conj (.-sinks this) e)) e)))
+  (changes! [this] (.-stream this)))
 
 (defprotocol IBehaviourConversion
   "Convert an event stream into a behaviour initializing with a default value."
@@ -144,5 +107,5 @@
 (extend-type Event
   IBehaviourConversion
   (hold! [this init]
-    (let [b (behaviour init)]
+    (let [b (behaviour init this)]
       (set! (.-sinks this) (conj (.-sinks this) b)) b)))
