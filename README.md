@@ -11,16 +11,10 @@ Get in touch if you are interested in helping out.
 ### Events
 
 Events represent time-varying functions which have a finite set of
-occurences over time.  Create an event and generate a receiver for the
-event, which can either be bound to a DOM element via an
-addEventListener, set as the callback for a timer, or a result of an
-XmlHttpRequest.
+occurences over time.
 
 ```clojure
 (def my-event (shafty/event))
-
-(def my-event-receiver (shafty/generate-receiver my-event
-                                          (fn [x] (identity x))))
 ```
 
 Compose event streams using filter!, map!, reduce!, etc.
@@ -61,9 +55,9 @@ You can also call changes! to convert a Behaviour back to an Event.
   * reduce!
   * ~~merge!~~
   * ~~delay!~~
-* Should we abandon watchers?
-* Should we refactor swap! calls with -notify-watcher calls. Likely.
-* When we propagate records forward, we want to call an update-fn.
+* ~~Should we abandon watchers? *No.*~~
+* ~~Should we refactor swap! calls with -notify-watcher calls. Likely.~~
+* ~~When we propagate records forward, we want to call an update-fn.~~
 * Example applications:
   * ~~Text box auto-save~~
   * Timer with reset button
