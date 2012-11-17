@@ -13,7 +13,7 @@
   (-remove-watch [this key]
     (set! (.-watches this) (dissoc watches key))))
 
-(deftype Event [sinks sources watches]
+(deftype Event [sinks watches]
   IWatchable
   (-notify-watches [this oldval newval]
     (doseq [[key f] watches]
@@ -45,10 +45,10 @@
   "Define an event, which is a time-varying value with finite
   occurences."
   ([]
-   (let [e (Event. [] [] nil)]
+   (let [e (Event. nil nil)]
      (-add-watch e (gensym "watch") (fn [x y a b] (propagate! e b))) e))
   ([update-fn]
-   (let [e (Event. [] [] nil)]
+   (let [e (Event. nil nil)]
      (-add-watch e (gensym "watch") (partial update-fn e)) e)))
 
 (defn behaviour
