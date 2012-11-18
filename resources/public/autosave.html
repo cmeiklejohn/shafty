@@ -6,9 +6,13 @@
     <script type="text/javascript">var CLOSURE_NO_DEPS = true;</script>
   </head>
   <body>
-    <textarea id="data" cols="70" rows="20"></textarea><br />
+    <p>This document will autosave every 5 seconds, or when save is
+      clicked.</p>
+
+    <textarea id="data" cols="70" rows="20">This is the example copy.</textarea><br />
 
     <button id="save-button">Save</button>
+      <span style="color: green" id="save-status"></span>
 
     <script type="text/javascript" src="../../resources/public/examples.js"></script>
     <script type="text/javascript">shafty.examples.autosave.main()</script>

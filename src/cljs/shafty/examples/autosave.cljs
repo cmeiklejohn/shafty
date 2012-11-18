@@ -1,24 +1,19 @@
 (ns shafty.examples.autosave
-  (:use [shafty.event :only [event]]
+  (:use [shafty.observable :only [bind! bind-timer! bind-behaviour!]]
         [shafty.event_stream :only [merge! map!]])
-  (:require [goog.events :as events]
-            [goog.dom :as dom]))
+  (:require [goog.dom :as dom]))
+
+(defn- update-save-status []
+  (let [element (dom/getElement "save-status")
+        curtime (js/Date)]
+    (set! (.-innerHTML element) (str "Last save at " curtime))))
 
 (defn main []
   "Run the autosave example"
-  (.log js/console "Running autosave example.")
 
-  (let [ef (fn [] (js/Date))
-        as (fn [] (.log js/console "Autosave function firing!"))
-        e1 (event)
-        e2 (event)
+  (let [e1 (bind-timer! 5000)
+        e2 (bind! (dom/getElement "save-button") "click")
         e3 (merge! e1 e2)
-        e4 (map! e3 as)]
-
-    ;; Bind the event receiver to a timer.
-    (js/setInterval (fn [] (-notify-watches e1 nil (ef))) 1000)
-
-    ;; Bind event receiver to the save button.
-    (let [element (dom/getElement "save-button")]
-      (events/listen
-        element "click" (fn [] (-notify-watches e2 nil (ef)))))))
+        e4 (map! e3 update-save-status)
+        b1 (bind! (dom/getElement "data"))]
+    (.log js/console "Running autosave example.")))
