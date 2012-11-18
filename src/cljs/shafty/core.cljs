@@ -46,7 +46,8 @@
   occurences."
   ([]
    (let [e (Event. nil nil)]
-     (-add-watch e (gensym "watch") (fn [x y a b] (propagate! e b))) e))
+     (-add-watch e (gensym "watch") (fn [x y a b]
+                                      (propagate! e b))) e))
   ([update-fn]
    (let [e (Event. nil nil)]
      (-add-watch e (gensym "watch") (partial update-fn e)) e)))
@@ -56,7 +57,8 @@
   values."
   ([state stream]
    (let [e (Behaviour. state stream nil)]
-     (-add-watch e (gensym "watch") (fn [x y a b] (set! (.-state e) b))) e)))
+     (-add-watch e (gensym "watch") (fn [x y a b]
+                                      (set! (.-state e) b))) e)))
 
 (extend-type Event
   IComposableEventStream
@@ -85,7 +87,8 @@
 
   (delay! [this interval]
     (let [e (event (fn [me x y a b]
-                       (js/setTimeout (fn [] (propagate! me b)) interval)))]
+                       (js/setTimeout (fn []
+                                        (propagate! me b)) interval)))]
       (set! (.-sinks this) (conj (.-sinks this) e))
       e)))
 
@@ -100,9 +103,11 @@
   (changes! [this] (.-stream this)))
 
 (defprotocol IBehaviourConversion
-  "Convert an event stream into a behaviour initializing with a default value."
+  "Convert an event stream into a behaviour initializing with a default
+  value."
   (hold! [this init]
-         "Given an initial value, create a behaviour from an event stream."))
+         "Given an initial value, create a behaviour from an event
+         stream."))
 
 (extend-type Event
   IBehaviourConversion

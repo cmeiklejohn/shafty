@@ -8,10 +8,11 @@
   (.log js/console "Running autosave example.")
 
   (let [ef (fn [] (js/Date))
+        as (fn [] (.log js/console "Autosave function firing!"))
         e1 (shafty/event)
         e2 (shafty/event)
         e3 (shafty/merge! e1 e2)
-        e4 (shafty/map! e3 (fn [] (.log js/console "Saved!")))]
+        e4 (shafty/map! e3 as)]
 
     ;; Bind the event receiver to a timer.
     (js/setInterval (fn [] (-notify-watches e1 nil (ef))) 1000)
