@@ -6,7 +6,7 @@
   "Run the autosave example"
 
   (let [as (fn [] (.log js/console "Autosave function firing!"))
-        e1 (bind-timer! 1000)
+        e1 (bind-timer! 5000)
         e2 (bind-event! "save-button" "click")
         e3 (merge! e1 e2)
         e4 (map! e3 as)]
