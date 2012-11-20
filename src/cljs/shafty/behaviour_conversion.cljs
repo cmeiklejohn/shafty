@@ -1,4 +1,4 @@
-(ns shafty.behaviour_conversion)
+(ns shafty.behaviour-conversion)
 
 (defprotocol BehaviourConversion
   "Convert an event stream into a behaviour initializing with a default

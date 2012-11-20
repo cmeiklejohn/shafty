@@ -1,4 +1,4 @@
-(ns shafty.event_conversion)
+(ns shafty.event-conversion)
 
 (defprotocol EventConversion
   "Convert a behaviour back to an event stream."

@@ -1,5 +1,5 @@
 (ns shafty.behaviour
-  (:use [shafty.event_conversion :only [EventConversion]]))
+  (:use [shafty.event-conversion :only [EventConversion]]))
 
 (deftype Behaviour [state stream watches]
   IDeref

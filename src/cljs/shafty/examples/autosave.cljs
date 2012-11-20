@@ -1,11 +1,12 @@
 (ns shafty.examples.autosave
   (:use [shafty.observable :only [bind! bind-timer! bind-behaviour!]]
-        [shafty.event_stream :only [merge! map!]])
+        [shafty.event-stream :only [merge! map!]])
   (:require [goog.dom :as dom]))
 
 (defn- update-save-status []
   (let [element (dom/getElement "save-status")
-        curtime (js/Date)]
+        curtime (js/Date)
+        textarea (deref b1)]
     (set! (.-innerHTML element) (str "Last save at " curtime))))
 
 (defn main []
