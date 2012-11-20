@@ -1,4 +1,4 @@
-(ns shafty.event_stream)
+(ns shafty.event-stream)
 
 (defprotocol EventStream
   "The composable stream interface provides a series of filtering and

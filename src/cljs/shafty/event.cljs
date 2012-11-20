@@ -1,6 +1,6 @@
 (ns shafty.event
-  (:use [shafty.behaviour_conversion :only [BehaviourConversion]]
-        [shafty.event_stream :only [EventStream propagate!]]
+  (:use [shafty.behaviour-conversion :only [BehaviourConversion]]
+        [shafty.event-stream :only [EventStream propagate!]]
         [shafty.behaviour :only [behaviour]]))
 
 (deftype Event [sinks watches]

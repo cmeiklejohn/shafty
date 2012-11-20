@@ -47,18 +47,11 @@ You can also call changes! to convert a Behaviour back to an Event.
 (def my-behaviour-as-event (shafty/changes! my-behaviour-of-ones))
 ```
 
-## TODO
+## References
 
-* Add to IEventStream:
-  * reduce!
-  * ~~merge!~~
-  * ~~delay!~~
-* ~~Should we abandon watchers? *No.*~~
-* ~~Should we refactor swap! calls with -notify-watcher calls. Likely.~~
-* ~~When we propagate records forward, we want to call an update-fn.~~
-* Example applications:
-  * ~~Text box auto-save~~
-  * Timer with reset button
+Elliott, Conal., "Push-Pull Functional Reactive Programming"
+Meyerovich, Leo., "Flapjax: Functional Reactive Web Programming"
+Meyerovich, Leo., "Flapjax: A Programming Language for Ajax Applications"
 
 ## License
 

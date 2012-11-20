@@ -1,6 +1,6 @@
 (ns shafty.observable
-  (:use [shafty.event_stream :only [merge!]]
-        [shafty.behaviour_conversion :only [hold!]])
+  (:use [shafty.event-stream :only [merge!]]
+        [shafty.behaviour-conversion :only [hold!]])
   (:require [shafty.event :as event]
             [shafty.behaviour :as behaviour]
             [goog.dom :as dom]
