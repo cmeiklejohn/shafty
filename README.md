@@ -1,8 +1,6 @@
 # shafty
 
-Prototype ClojureScript functional reactive programming library. Shafty
-is just an experiment and shouldn't be used in production.  Shafty is
-currently in development.
+ClojureScript functional reactive programming library. Shafty is just an experiment and shouldn't be used in production.  Shafty is currently in development.
 
 Get in touch if you are interested in helping out.
 
