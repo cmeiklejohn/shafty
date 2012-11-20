@@ -49,9 +49,9 @@ You can also call changes! to convert a Behaviour back to an Event.
 
 ## References
 
-Elliott, Conal., "Push-Pull Functional Reactive Programming"
-Meyerovich, Leo., "Flapjax: Functional Reactive Web Programming"
-Meyerovich, Leo., "Flapjax: A Programming Language for Ajax Applications"
+* Elliott, Conal., "Push-Pull Functional Reactive Programming"
+* Meyerovich, Leo., "Flapjax: Functional Reactive Web Programming"
+* Meyerovich, Leo., "Flapjax: A Programming Language for Ajax Applications"
 
 ## License
 
