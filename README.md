@@ -15,13 +15,13 @@ Get in touch if you are interested in helping out.
 Events represent time-varying functions which have a finite set of
 occurences over time.
 
-```
+```clojure
 (def my-event (shafty/event))
 ```
 
 Compose event streams using filter!, map!, reduce!, etc.
 
-```
+```clojure
 (def my-filtered-event (shafty/filter! my-event
                                 (fn [x] (= 1 x))))
 
@@ -42,7 +42,7 @@ Behaviours share the same IEventStream protocol, so you can also use merge!, del
 
 You can also call changes! to convert a Behaviour back to an Event.
 
-```
+```clojure
 (def my-behaviour-of-ones (shafty/hold! my-filtered-event 1))
 
 (def my-behaviour-as-event (shafty/changes! my-behaviour-of-ones))
@@ -53,7 +53,7 @@ You can also call changes! to convert a Behaviour back to an Event.
 The repository contains a series of examples in the
 ```shafty.examples``` namespace. Included below is a simple example of a Google-docs like autosave feature built using shafty.
 
-```
+```clojure
 (ns shafty.examples.autosave
   (:use [shafty.observable :only [bind! bind-timer! bind-behaviour!]]
         [shafty.event-stream :only [merge! map!]])
