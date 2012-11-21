@@ -1,6 +1,10 @@
 # shafty
 
-ClojureScript functional reactive programming library. Shafty is just an experiment and shouldn't be used in production.  Shafty is currently in development.
+ClojureScript functional reactive programming library.
+
+## Disclaimer
+
+Shafty is currently under development and the API is subject to change.  Shafty shouldn't be used in production.
 
 Get in touch if you are interested in helping out.
 
@@ -11,13 +15,13 @@ Get in touch if you are interested in helping out.
 Events represent time-varying functions which have a finite set of
 occurences over time.
 
-```clojure
+```
 (def my-event (shafty/event))
 ```
 
 Compose event streams using filter!, map!, reduce!, etc.
 
-```clojure
+```
 (def my-filtered-event (shafty/filter! my-event
                                 (fn [x] (= 1 x))))
 
@@ -32,16 +36,13 @@ Compose event streams using filter!, map!, reduce!, etc.
 
 ### Behaviours
 
-Behaviours are time-varying functions which constantly have a value.
-Derive a behaviour from an event, or generate a receiver to watch a
-particular DOM element, such as an input field.
+Behaviours are time-varying functions which constantly have a value. Derive a behaviour from an event, or generate a receiver to watch a particular DOM element, such as an input field.
 
-Behaviours share the same IEventStream protocol, so you can also use
-merge!, delay!, map!, filter!, etc. to compose them.
+Behaviours share the same IEventStream protocol, so you can also use merge!, delay!, map!, filter!, etc. to compose them.
 
 You can also call changes! to convert a Behaviour back to an Event.
 
-```clojure
+```
 (def my-behaviour-of-ones (shafty/hold! my-filtered-event 1))
 
 (def my-behaviour-as-event (shafty/changes! my-behaviour-of-ones))
@@ -50,10 +51,9 @@ You can also call changes! to convert a Behaviour back to an Event.
 ## Examples
 
 The repository contains a series of examples in the
-```shafty.examples``` namespace.  Included below is a simple example of
-a Google-docs like autosave feature built using shafty.
+```shafty.examples``` namespace. Included below is a simple example of a Google-docs like autosave feature built using shafty.
 
-```clojure
+```
 (ns shafty.examples.autosave
   (:use [shafty.observable :only [bind! bind-timer! bind-behaviour!]]
         [shafty.event-stream :only [merge! map!]])
@@ -78,9 +78,9 @@ a Google-docs like autosave feature built using shafty.
 
 ## References
 
-* Elliott, Conal., "Push-Pull Functional Reactive Programming"
-* Meyerovich, Leo., "Flapjax: Functional Reactive Web Programming"
-* Meyerovich, Leo., "Flapjax: A Programming Language for Ajax Applications"
+* Elliott, [_Push-Pull Functional Reactive Programming_](http://dl.acm.org/citation.cfm?id=1596643)
+* Meyerovich, [_Flapjax: Functional Reactive Web Programming_](http://www.cs.brown.edu/research/pubs/theses/ugrad/2007/lmeyerov.pdf)
+* Meyerovich, Guha, Baskin, Cooper, Greenberg, Bromfield,  Krishnamurthi, [_Flapjax: A Programming Language for Ajax Applications_](http://dl.acm.org/citation.cfm?id=1640091)
 
 ## License
 
