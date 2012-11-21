@@ -30,9 +30,7 @@
       <section>
         <h1>shafty</h1>
 
-<p>Prototype ClojureScript functional reactive programming library. Shafty
-is just an experiment and shouldn't be used in production.  Shafty is
-currently in development.</p>
+<p>ClojureScript functional reactive programming library. Shafty is just an experiment and shouldn't be used in production.  Shafty is currently in development.</p>
 
 <p>Get in touch if you are interested in helping out.</p>
 
@@ -76,27 +74,40 @@ merge!, delay!, map!, filter!, etc. to compose them.</p>
 <span class="p">(</span><span class="k">def </span><span class="nv">my-behaviour-as-event</span> <span class="p">(</span><span class="nf">shafty/changes!</span> <span class="nv">my-behaviour-of-ones</span><span class="p">))</span>
 </pre></div>
 
-<h2>TODO</h2>
+<h2>Examples</h2>
+
+<p>The repository contains a series of examples in the
+<code>shafty.examples</code> namespace.  Included below is a simple example of
+a Google-docs like autosave feature built using shafty.</p>
+
+<div class="highlight"><pre><span class="p">(</span><span class="kd">ns </span><span class="nv">shafty.examples.autosave</span>
+  <span class="p">(</span><span class="ss">:use</span> <span class="p">[</span><span class="nv">shafty.observable</span> <span class="ss">:only</span> <span class="p">[</span><span class="nv">bind!</span> <span class="nv">bind-timer!</span> <span class="nv">bind-behaviour!</span><span class="p">]]</span>
+        <span class="p">[</span><span class="nv">shafty.event-stream</span> <span class="ss">:only</span> <span class="p">[</span><span class="nv">merge!</span> <span class="nv">map!</span><span class="p">]])</span>
+  <span class="p">(</span><span class="ss">:require</span> <span class="p">[</span><span class="nv">goog.dom</span> <span class="ss">:as</span> <span class="nv">dom</span><span class="p">]))</span>
+
+<span class="p">(</span><span class="kd">defn- </span><span class="nv">update-save-status</span> <span class="p">[]</span>
+  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">element</span> <span class="p">(</span><span class="nf">dom/getElement</span> <span class="s">"save-status"</span><span class="p">)</span>
+        <span class="nv">curtime</span> <span class="p">(</span><span class="nf">js/Date</span><span class="p">)</span>
+        <span class="nv">textarea</span> <span class="p">(</span><span class="nb">deref </span><span class="nv">b1</span><span class="p">)]</span>
+    <span class="p">(</span><span class="nf">set!</span> <span class="p">(</span><span class="nf">.-innerHTML</span> <span class="nv">element</span><span class="p">)</span> <span class="p">(</span><span class="nb">str </span><span class="s">"Last save at "</span> <span class="nv">curtime</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">main</span> <span class="p">[]</span>
+  <span class="s">"Run the autosave example"</span>
+
+  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">e1</span> <span class="p">(</span><span class="nf">bind-timer!</span> <span class="mi">5000</span><span class="p">)</span>
+        <span class="nv">e2</span> <span class="p">(</span><span class="nf">bind!</span> <span class="p">(</span><span class="nf">dom/getElement</span> <span class="s">"save-button"</span><span class="p">)</span> <span class="s">"click"</span><span class="p">)</span>
+        <span class="nv">e3</span> <span class="p">(</span><span class="nf">merge!</span> <span class="nv">e1</span> <span class="nv">e2</span><span class="p">)</span>
+        <span class="nv">e4</span> <span class="p">(</span><span class="nf">map!</span> <span class="nv">e3</span> <span class="nv">update-save-status</span><span class="p">)</span>
+        <span class="nv">b1</span> <span class="p">(</span><span class="nf">bind!</span> <span class="p">(</span><span class="nf">dom/getElement</span> <span class="s">"data"</span><span class="p">))]</span>
+    <span class="p">(</span><span class="nf">.log</span> <span class="nv">js/console</span> <span class="s">"Running autosave example."</span><span class="p">)))</span>
+</pre></div>
+
+<h2>References</h2>
 
 <ul>
-<li>Add to IEventStream:
-
-<ul>
-<li>reduce!</li>
-<li><del>merge!</del></li>
-<li><del>delay!</del></li>
-</ul>
-</li>
-<li><del>Should we abandon watchers? <em>No.</em></del></li>
-<li><del>Should we refactor swap! calls with -notify-watcher calls. Likely.</del></li>
-<li><del>When we propagate records forward, we want to call an update-fn.</del></li>
-<li>Example applications:
-
-<ul>
-<li><del>Text box auto-save</del></li>
-<li>Timer with reset button</li>
-</ul>
-</li>
+<li>Elliott, Conal., "Push-Pull Functional Reactive Programming"</li>
+<li>Meyerovich, Leo., "Flapjax: Functional Reactive Web Programming"</li>
+<li>Meyerovich, Leo., "Flapjax: A Programming Language for Ajax Applications"</li>
 </ul><h2>License</h2>
 
 <p>Copyright (C) 2012 Christopher Meiklejohn.</p>
