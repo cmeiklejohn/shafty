@@ -30,7 +30,11 @@
       <section>
         <h1>shafty</h1>
 
-<p>ClojureScript functional reactive programming library. Shafty is just an experiment and shouldn't be used in production.  Shafty is currently in development.</p>
+<p>ClojureScript functional reactive programming library.</p>
+
+<h2>Disclaimer</h2>
+
+<p>Shafty is currently under development and the API is subject to change.  Shafty shouldn't be used in production.</p>
 
 <p>Get in touch if you are interested in helping out.</p>
 
@@ -60,12 +64,9 @@ occurences over time.</p>
 
 <h3>Behaviours</h3>
 
-<p>Behaviours are time-varying functions which constantly have a value.
-Derive a behaviour from an event, or generate a receiver to watch a
-particular DOM element, such as an input field.</p>
+<p>Behaviours are time-varying functions which constantly have a value. Derive a behaviour from an event, or generate a receiver to watch a particular DOM element, such as an input field.</p>
 
-<p>Behaviours share the same IEventStream protocol, so you can also use
-merge!, delay!, map!, filter!, etc. to compose them.</p>
+<p>Behaviours share the same IEventStream protocol, so you can also use merge!, delay!, map!, filter!, etc. to compose them.</p>
 
 <p>You can also call changes! to convert a Behaviour back to an Event.</p>
 
@@ -77,8 +78,7 @@ merge!, delay!, map!, filter!, etc. to compose them.</p>
 <h2>Examples</h2>
 
 <p>The repository contains a series of examples in the
-<code>shafty.examples</code> namespace.  Included below is a simple example of
-a Google-docs like autosave feature built using shafty.</p>
+<code>shafty.examples</code> namespace. Included below is a simple example of a Google-docs like autosave feature built using shafty.</p>
 
 <div class="highlight"><pre><span class="p">(</span><span class="kd">ns </span><span class="nv">shafty.examples.autosave</span>
   <span class="p">(</span><span class="ss">:use</span> <span class="p">[</span><span class="nv">shafty.observable</span> <span class="ss">:only</span> <span class="p">[</span><span class="nv">bind!</span> <span class="nv">bind-timer!</span> <span class="nv">bind-behaviour!</span><span class="p">]]</span>
@@ -105,9 +105,12 @@ a Google-docs like autosave feature built using shafty.</p>
 <h2>References</h2>
 
 <ul>
-<li>Elliott, Conal., "Push-Pull Functional Reactive Programming"</li>
-<li>Meyerovich, Leo., "Flapjax: Functional Reactive Web Programming"</li>
-<li>Meyerovich, Leo., "Flapjax: A Programming Language for Ajax Applications"</li>
+<li>Elliott, <a href="http://dl.acm.org/citation.cfm?id=1596643"><em>Push-Pull Functional Reactive Programming</em></a>
+</li>
+<li>Meyerovich, <a href="http://www.cs.brown.edu/research/pubs/theses/ugrad/2007/lmeyerov.pdf"><em>Flapjax: Functional Reactive Web Programming</em></a>
+</li>
+<li>Meyerovich, Guha, Baskin, Cooper, Greenberg, Bromfield,  Krishnamurthi, <a href="http://dl.acm.org/citation.cfm?id=1640091"><em>Flapjax: A Programming Language for Ajax Applications</em></a>
+</li>
 </ul><h2>License</h2>
 
 <p>Copyright (C) 2012 Christopher Meiklejohn.</p>
