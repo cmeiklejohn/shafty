@@ -60,4 +60,8 @@
                        (js/setTimeout (fn []
                                         (propagate! me b)) interval)))]
       (set! (.-sinks this) (conj (.-sinks this) e))
-      e)))
+      e))
+
+  (snapshot! [this that]
+    (let [e (event (fn [me x y a b] (propagate! me (deref that))))]
+      (set! (.-sinks this) (conj (.-sinks this) e)) e)))

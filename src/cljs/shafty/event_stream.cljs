@@ -16,4 +16,6 @@
           "Merge supplied event stream and other event stream into one
           event stream")
   (delay! [this interval]
-          "Delay propagation for interval."))
+          "Delay propagation for interval.")
+  (snapshot! [this that]
+             ""))

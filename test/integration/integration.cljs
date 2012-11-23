@@ -1,7 +1,7 @@
 (ns test.integration.integration
   (:use [shafty.event :only [event]]
-        [shafty.event_stream :only [merge! map! filter!]]
-        [shafty.behaviour_conversion :only [hold!]]))
+        [shafty.event-stream :only [merge! map! filter!]]
+        [shafty.behaviour-conversion :only [hold!]]))
 
 (.log js/console "Starting Tests")
 
