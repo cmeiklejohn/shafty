@@ -18,4 +18,5 @@
   (delay! [this interval]
           "Delay propagation for interval.")
   (snapshot! [this that]
-             ""))
+             "Generate a new event stream, which will contain the result
+             of snapshotting a beahviour for every event occurrence."))
