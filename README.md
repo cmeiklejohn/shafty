@@ -48,34 +48,6 @@ You can also call changes! to convert a Behaviour back to an Event.
 (def my-behaviour-as-event (shafty/changes! my-behaviour-of-ones))
 ```
 
-## Examples
-
-The repository contains a series of examples in the
-```shafty.examples``` namespace. Included below is a simple example of a Google-docs like autosave feature built using shafty.
-
-```clojure
-(ns shafty.examples.autosave
-  (:use [shafty.observable :only [bind! bind-timer! bind-behaviour!]]
-        [shafty.event-stream :only [merge! map!]])
-  (:require [goog.dom :as dom]))
-
-(defn- update-save-status []
-  (let [element (dom/getElement "save-status")
-        curtime (js/Date)
-        textarea (deref b1)]
-    (set! (.-innerHTML element) (str "Last save at " curtime))))
-
-(defn main []
-  "Run the autosave example"
-
-  (let [e1 (bind-timer! 5000)
-        e2 (bind! (dom/getElement "save-button") "click")
-        e3 (merge! e1 e2)
-        e4 (map! e3 update-save-status)
-        b1 (bind! (dom/getElement "data"))]
-    (.log js/console "Running autosave example.")))
-```
-
 ## References
 
 * Elliott, [_Push-Pull Functional Reactive Programming_](http://dl.acm.org/citation.cfm?id=1596643)
