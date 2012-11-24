@@ -32,7 +32,7 @@
 (defn main []
   "Run the autosave example."
 
-  (-> (bind! (dom/getElement "save-button") "click")
+  (-> (bind! (dom/getElement "save-button"))
       (merge! (bind-timer! 10000))
       (snapshot! (bind! (dom/getElement "live-content")))
       (map! make-request)))
