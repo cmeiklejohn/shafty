@@ -13,6 +13,7 @@
         [shafty.event-stream :only [map!]]
         [shafty.propagatable :only [Propagatable propagate!]]
         [shafty.liftable :only [Liftable]]))
+        [shafty.renderable :only [Renderable]]
 
 (deftype Behaviour [state stream watches]
   IDeref
@@ -49,3 +50,9 @@
   Liftable
   (lift! [this lift-fn]
     (hold! (map! (changes! this) lift-fn) nil)))
+
+(extend-type Behaviour
+  Renderable
+  (insert! [this element]
+    (.log js/console "Rendering.")))
+
