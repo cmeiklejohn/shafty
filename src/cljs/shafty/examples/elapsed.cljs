@@ -40,4 +40,6 @@
 
 (defn main []
   "Run the elapsed time example."
+  (-> (timer)
+      (reset))
   (.log js/console "Starting the elapsed time example."))
