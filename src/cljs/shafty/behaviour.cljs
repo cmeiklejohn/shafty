@@ -12,8 +12,8 @@
         [shafty.behaviour-conversion :only [hold!]]
         [shafty.event-stream :only [map!]]
         [shafty.propagatable :only [Propagatable propagate!]]
-        [shafty.liftable :only [Liftable]]))
         [shafty.renderable :only [Renderable]]
+        [shafty.liftable :only [Liftable]]
 
 (deftype Behaviour [state stream watches]
   IDeref
