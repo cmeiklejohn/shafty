@@ -12,4 +12,4 @@
 (defprotocol Liftable
   "Provide a mechanism for lifting functions onto behaviours."
   (lift! [this lift-fn]
-              "Lift a function onto a behaviour."))
+         "Lift a function onto a behaviour."))
