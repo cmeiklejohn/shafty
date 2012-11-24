@@ -9,9 +9,10 @@
 ;; from this software.
 ;;
 (ns shafty.behaviour
-  (:use [shafty.event-conversion :only [EventConversion]]))
+  (:use [shafty.event-conversion :only [EventConversion]]
+        [shafty.propagatable :only [Propagatable propagate!]]))
 
-(deftype Behaviour [state stream sinks watches]
+(deftype Behaviour [state stream sinks sources watches]
   IDeref
   (-deref [_] state)
 
@@ -28,10 +29,18 @@
   "Define a behaviour, which is a time-varying value providing constant
   values."
   ([state stream]
-   (let [e (Behaviour. state stream nil nil)]
+   (let [e (Behaviour. state stream nil nil nil)]
      (-add-watch e (gensym "watch") (fn [x y a b]
-                                      (set! (.-state e) b))) e)))
+                                      (set! (.-state e) b)))
+     (-add-watch e (gensym "watch") (fn [x y a b]
+                                      (propagate! e b))) e)))
 
 (extend-type Behaviour
   EventConversion
   (changes! [this] (.-stream this)))
+
+(extend-type Behaviour
+  Propagatable
+  (propagate! [this value]
+    (let [sinks (.-sinks this)]
+      (doall (map (fn [x] (-notify-watches x nil value)) sinks)))))

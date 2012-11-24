@@ -10,10 +10,11 @@
 ;;
 (ns shafty.event
   (:use [shafty.behaviour-conversion :only [BehaviourConversion]]
-        [shafty.event-stream :only [EventStream propagate!]]
+        [shafty.event-stream :only [EventStream]]
+        [shafty.propagatable :only [Propagatable propagate!]]
         [shafty.behaviour :only [behaviour]]))
 
-(deftype Event [sinks watches]
+(deftype Event [sinks sources watches]
   IWatchable
   (-notify-watches [this oldval newval]
     (doseq [[key f] watches]
@@ -27,11 +28,11 @@
   "Define an event, which is a time-varying value with finite
   occurences."
   ([]
-   (let [e (Event. nil nil)]
+   (let [e (Event. nil nil nil)]
      (-add-watch e (gensym "watch") (fn [x y a b]
                                       (propagate! e b))) e))
   ([update-fn]
-   (let [e (Event. nil nil)]
+   (let [e (Event. nil nil nil)]
      (-add-watch e (gensym "watch") (partial update-fn e)) e)))
 
 (extend-type Event
@@ -41,11 +42,13 @@
       (set! (.-sinks this) (conj (.-sinks this) b)) b)))
 
 (extend-type Event
-  EventStream
+  Propagatable
   (propagate! [this value]
     (let [sinks (.-sinks this)]
-      (doall (map (fn [x] (-notify-watches x nil value)) sinks))))
+      (doall (map (fn [x] (-notify-watches x nil value)) sinks)))))
 
+(extend-type Event
+  EventStream
   (filter! [this filter-fn]
     (let [e (event (fn [me x y a b]
                      (let [v (apply filter-fn [b])]
