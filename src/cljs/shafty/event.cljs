@@ -9,9 +9,12 @@
 ;;
 (ns shafty.event
   (:use [shafty.behaviour-conversion :only [BehaviourConversion]]
-        [shafty.event-stream :only [EventStream]]
+        [shafty.event-stream :only [EventStream merge!]]
         [shafty.propagatable :only [Propagatable propagate!]]
-        [shafty.behaviour :only [behaviour]]))
+        [shafty.observable :only [Observable bind-one! bind-many!]]
+        [shafty.behaviour :only [behaviour]])
+  (:require [goog.dom :as dom]
+            [goog.events :as events]))
 
 (deftype Event [sinks sources watches]
   IWatchable
@@ -79,3 +82,20 @@
     (let [e (event (fn [me x y a b] (propagate! me (deref that))))]
       (set! (.-sinks this) (conj (.-sinks this) e))
       (set! (.-sources e) (conj (.-sources e) this)) e)))
+
+(extend-type js/HTMLElement
+  Observable
+  (bind! [this]
+    (bind-one! this "click"))
+  (bind-one! [this event-type]
+    (bind-one! this event-type (fn [x] (identity x))))
+  (bind-one! [this event-type value-fn]
+    (let [e (event)]
+      (events/listen this event-type
+                     (fn [ev]
+                       (-notify-watches e nil (apply value-fn [ev])))) e))
+  (bind-many! [this event-types]
+    (bind-many! this event-types (fn [x] (identity x))))
+  (bind-many! [this event-types value-fn]
+    (reduce (fn [acc x] (merge! acc x))
+            (map (fn [event-type] (bind-one! this event-type value-fn)) event-types))))
