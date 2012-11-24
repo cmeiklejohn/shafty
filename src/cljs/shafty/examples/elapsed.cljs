@@ -21,25 +21,32 @@
 ;; TODO: This example is currently incomplete.
 ;;
 (ns shafty.examples.elapsed
-  (:use [shafty.observable :only [bind! bind-timer! bind-behaviour!]]
+  (:use [shafty.observable :only [bind!]]
         [shafty.event-stream :only [merge! map! snapshot!]]
-        [shafty.behaviour-conversion :only [hold!]])
+        [shafty.behaviour-conversion :only [hold!]]
+        [shafty.liftable :only [lift!]]
+        [shafty.renderable :only [insert!]]
+        [shafty.timer :only [timer!]])
   (:require [goog.dom :as dom]))
 
 (defn- timer []
   "Generate a timer, and convert the timer into a behaviour."
-  (-> (bind-timer! 1000 (fn [] (js/Date))) (hold! (js/Date))))
+  (-> (timer! 1000 (fn [] (js/Date)))
+      (hold! (js/Date))))
 
 (defn- reset [timer]
   "Generate a behaviour originating from click events on the reset
   button.  When clicked, snapshot the current state of the timer."
-  (-> (bind! (dom/getElement "reset-button") "click")
+  (-> (bind! (dom/getElement "reset-button"))
       (snapshot! timer)
-      (map! (fn [] (.log js/console "Got a click")))
+      (map! (fn [] (.log js/console "Reset button clicked.")))
       (hold! (js/Date))))
 
 (defn main []
   "Run the elapsed time example."
-  (-> (timer)
-      (reset))
+  (let [the-timer (timer)
+        reset-button (reset the-timer)]
+    (-> (lift! the-timer (fn [x] (- x (deref reset-button))))
+        (insert! (dom/getElement "elapsed"))))
+
   (.log js/console "Starting the elapsed time example."))
