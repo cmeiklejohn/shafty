@@ -23,6 +23,13 @@ Behaviours are time-varying functions which constantly have a value.
 Derive a behaviour from an event, or generate a receiver to watch a
 particular DOM element, such as an input field.
 
+## Incomplete
+
+* Figure out how to properly perform the multi-arity lift, and replace
+  the examples.
+* Add a requests! function for taking a series of web requests and
+  returning web responses.
+
 ## References
 
 * Elliott, [_Push-Pull Functional Reactive Programming_](http://dl.acm.org/citation.cfm?id=1596643)

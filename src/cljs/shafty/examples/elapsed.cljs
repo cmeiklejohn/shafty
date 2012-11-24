@@ -17,7 +17,9 @@
 ;;                 .startsWith(startTm);
 ;; var elapsedB = nowB - clickTmsB;
 ;; insertValueB(elapsedB, "curTime", "innerHTML");
-
+;;
+;; TODO: This example is currently incomplete.
+;;
 (ns shafty.examples.elapsed
   (:use [shafty.observable :only [bind! bind-timer! bind-behaviour!]]
         [shafty.event-stream :only [merge! map! snapshot!]]
