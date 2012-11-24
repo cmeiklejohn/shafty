@@ -51,7 +51,7 @@
 (extend-type js/HTMLElement
   Observable
   (bind! [this]
-    (bind-behaviour! this []
+    (bind-behaviour! this ["change"]
                      (fn [] (.-innerHTML this))
                      (fn [x] (set! (.-innerHTML this) x))))
   (bind! [this event]
