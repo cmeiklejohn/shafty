@@ -50,19 +50,18 @@
 
 (extend-type js/HTMLElement
   Observable
-  (bind! [this event]
-    (bind-event! this event (fn [x] (identity x)))))
-
-(extend-type js/HTMLSpanElement
-  Observable
   (bind! [this]
     (bind-behaviour! this []
                      (fn [] (.-innerHTML this))
-                     (fn [x] (set! (.-innerHTML this) x)))))
+                     (fn [x] (set! (.-innerHTML this) x))))
+  (bind! [this event]
+    (bind-event! this event (fn [x] (identity x)))))
 
-(extend-type js/HTMLTextAreaElement
+(extend-type js/HTMLInputElement
   Observable
   (bind! [this]
     (bind-behaviour! this ["change" "keyup"]
                      (fn [] (.-value this))
-                     (fn [x] (set! (.-value this) x)))))
+                     (fn [x] (set! (.-value this) x))))
+  (bind! [this event]
+    (bind-event! this event (fn [x] (identity x)))))
