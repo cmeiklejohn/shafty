@@ -28,12 +28,13 @@
   "Generate a timer, and convert the timer into a behaviour."
   (-> (bind-timer! 1000 (fn [] (js/Date))) (hold! (js/Date))))
 
-(defn- reset [timer elapsed]
-  "Generate an event stream originating from click events on the reset
-  button.  When clicked, snapshot the current state of the timer and
-  sets the elapsed behaviour initial state."
+(defn- reset [timer]
+  "Generate a behaviour originating from click events on the reset
+  button.  When clicked, snapshot the current state of the timer."
   (-> (bind! (dom/getElement "reset-button") "click")
-      (snapshot! timer)))
+      (snapshot! timer)
+      (map! (fn [] (.log js/console "Got a click")))
+      (hold! (js/Date))))
 
 (defn main []
   "Run the elapsed time example."
