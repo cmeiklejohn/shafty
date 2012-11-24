@@ -47,13 +47,18 @@
     (let [sinks (.-sinks this)]
       (doall (map (fn [x] (-notify-watches x nil value)) sinks)))))
 
+(defn bind-lift! [lift-fn & behaviours]
+  "Lift a function onto many behaviours."
+  (let [e (behaviour (fn [me x y a b]
+                       (propagate! me
+                          (set! (.-state me)
+                            (apply lift-fn (map deref (.-sources me)))))))]
+    (set! (.-sources e) behaviours)
+    (doall (map
+      (fn [behaviour]
+        (set! (.-sinks behaviour)
+          (conj (.-sinks behaviour) e))) behaviours)) e))
+
 (extend-type Behaviour
   Liftable
-  (lift! [this lift-fn]
-    (let [e (behaviour (fn [me x y a b]
-                         (let [final (apply lift-fn
-                                            (map deref (.-sources me)))]
-                           (set! (.-state me) final)
-                           (propagate! me final))))]
-      (set! (.-sources e) (conj (.-sources e) this))
-      (set! (.-sinks this) (conj (.-sinks this) e)) e)))
+  (lift! [this lift-fn] (bind-lift! lift-fn this)))

@@ -8,7 +8,8 @@
 ;; this software.
 ;;
 (ns test.integration.integration
-  (:use [shafty.event :only [event]]
+  (:use [shafty.behaviour :only [bind-lift!]]
+        [shafty.event :only [event]]
         [shafty.event-stream :only [merge! map! filter!]]
         [shafty.behaviour-conversion :only [hold!]]
         [shafty.liftable :only [lift!]]))
@@ -73,7 +74,8 @@
       e3 (merge! e1 e2)
       b1 (hold! e3 0)
       b2 (lift! b1 (fn [x] (* 2 x)))
-      b3 (lift! b2 (fn [x] (* 2 x)))]
+      b3 (lift! b2 (fn [x] (* 2 x)))
+      b4 (bind-lift! (fn [x y z] (+ x y z)) b1 b2 b3)]
   (-notify-watches e1 nil 1)
   (assert (= 1 @b1))
   (assert (= 2 @b2))
@@ -89,6 +91,8 @@
   (-notify-watches e2 nil 4)
   (assert (= 4 @b1))
   (assert (= 8 @b2))
-  (assert (= 16 @b3)))
+  (assert (= 16 @b3))
+
+  (assert (= 28 @b4)))
 
 (.log js/console "Ending Tests")
