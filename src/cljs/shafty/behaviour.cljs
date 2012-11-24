@@ -10,7 +10,8 @@
 ;;
 (ns shafty.behaviour
   (:use [shafty.event-conversion :only [EventConversion]]
-        [shafty.propagatable :only [Propagatable propagate!]]))
+        [shafty.propagatable :only [Propagatable propagate!]]
+        [shafty.liftable :only [Liftable]]))
 
 (deftype Behaviour [state stream sinks sources watches]
   IDeref
@@ -31,9 +32,11 @@
   ([state stream]
    (let [e (Behaviour. state stream nil nil nil)]
      (-add-watch e (gensym "watch") (fn [x y a b]
-                                      (set! (.-state e) b)))
-     (-add-watch e (gensym "watch") (fn [x y a b]
-                                      (propagate! e b))) e)))
+                                      (set! (.-state e) b)
+                                      (propagate! e b))) e))
+  ([update-fn]
+   (let [e (Behaviour. nil nil nil nil nil)]
+     (-add-watch e (gensym "watch") (partial update-fn e)) e)))
 
 (extend-type Behaviour
   EventConversion
@@ -44,3 +47,14 @@
   (propagate! [this value]
     (let [sinks (.-sinks this)]
       (doall (map (fn [x] (-notify-watches x nil value)) sinks)))))
+
+(extend-type Behaviour
+  Liftable
+  (lift! [this lift-fn]
+    (let [e (behaviour (fn [me x y a b]
+                         (let [final (apply lift-fn
+                                            (map deref (.-sources me)))]
+                           (set! (.-state me) final)
+                           (propagate! me final))))]
+      (set! (.-sources e) (conj (.-sources e) this))
+      (set! (.-sinks this) (conj (.-sinks this) e)) e)))
