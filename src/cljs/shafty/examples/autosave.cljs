@@ -12,6 +12,8 @@
 ;;
 ;; Example similar to the example in Section 2.3 of the Flapjax paper.
 ;;
+;; TODO: This example is currently incomplete.
+;;
 (ns shafty.examples.autosave
   (:use [shafty.observable :only [bind! bind-timer!]]
         [shafty.event-stream :only [merge! map! snapshot!]])
