@@ -11,7 +11,7 @@
 (ns shafty.behaviour
   (:use [shafty.event-conversion :only [EventConversion]]))
 
-(deftype Behaviour [initial state stream watches]
+(deftype Behaviour [state stream watches]
   IDeref
   (-deref [_] state)
 
@@ -27,8 +27,8 @@
 (defn behaviour
   "Define a behaviour, which is a time-varying value providing constant
   values."
-  ([initial stream]
-   (let [e (Behaviour. initial nil stream nil)]
+  ([state stream]
+   (let [e (Behaviour. state stream nil)]
      (-add-watch e (gensym "watch") (fn [x y a b]
                                       (set! (.-state e) b))) e)))
 
