@@ -8,11 +8,13 @@
 ;; this software.
 ;;
 (ns shafty.behaviour
-  (:use [shafty.event-conversion :only [EventConversion]]
+  (:use [shafty.event-conversion :only [EventConversion changes!]]
+        [shafty.behaviour-conversion :only [hold!]]
+        [shafty.event-stream :only [map!]]
         [shafty.propagatable :only [Propagatable propagate!]]
         [shafty.liftable :only [Liftable]]))
 
-(deftype Behaviour [state stream sinks sources watches]
+(deftype Behaviour [state stream watches]
   IDeref
   (-deref [_] state)
 
@@ -29,13 +31,9 @@
   "Define a behaviour, which is a time-varying value providing constant
   values."
   ([state stream]
-   (let [e (Behaviour. state stream nil nil nil)]
+   (let [e (Behaviour. state stream nil)]
      (-add-watch e (gensym "watch") (fn [x y a b]
-                                      (set! (.-state e) b)
-                                      (propagate! e b))) e))
-  ([update-fn]
-   (let [e (Behaviour. nil nil nil nil nil)]
-     (-add-watch e (gensym "watch") (partial update-fn e)) e)))
+                                      (propagate! e (set! (.-state e) b)))) e)))
 
 (extend-type Behaviour
   EventConversion
@@ -47,18 +45,7 @@
     (let [sinks (.-sinks this)]
       (doall (map (fn [x] (-notify-watches x nil value)) sinks)))))
 
-(defn bind-lift! [lift-fn & behaviours]
-  "Lift a function onto many behaviours."
-  (let [e (behaviour (fn [me x y a b]
-                       (propagate! me
-                          (set! (.-state me)
-                            (apply lift-fn (map deref (.-sources me)))))))]
-    (set! (.-sources e) behaviours)
-    (doall (map
-      (fn [behaviour]
-        (set! (.-sinks behaviour)
-          (conj (.-sinks behaviour) e))) behaviours)) e))
-
 (extend-type Behaviour
   Liftable
-  (lift! [this lift-fn] (bind-lift! lift-fn this)))
+  (lift! [this lift-fn]
+    (hold! (map! (changes! this) lift-fn) nil)))

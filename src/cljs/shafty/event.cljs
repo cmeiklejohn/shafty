@@ -53,27 +53,29 @@
                      (let [v (apply filter-fn [b])]
                        (if (true? v) (propagate! me b)))))]
       (set! (.-sinks this) (conj (.-sinks this) e))
-      e))
+      (set! (.-sources e) (conj (.-sources e) this)) e))
 
   (merge! [this that]
     (let [e (event)]
       (set! (.-sinks this) (conj (.-sinks this) e))
       (set! (.-sinks that) (conj (.-sinks that) e))
-      e))
+      (set! (.-sources e) (conj (.-sources e) this))
+      (set! (.-sources e) (conj (.-sources e) that)) e))
 
   (map! [this map-fn]
     (let [e (event (fn [me x y a b]
                        (propagate! me (apply map-fn [b]))))]
       (set! (.-sinks this) (conj (.-sinks this) e))
-      e))
+      (set! (.-sources e) (conj (.-sources e) this)) e))
 
   (delay! [this interval]
     (let [e (event (fn [me x y a b]
                        (js/setTimeout (fn []
                                         (propagate! me b)) interval)))]
       (set! (.-sinks this) (conj (.-sinks this) e))
-      e))
+      (set! (.-sources e) (conj (.-sources e) this)) e))
 
   (snapshot! [this that]
     (let [e (event (fn [me x y a b] (propagate! me (deref that))))]
-      (set! (.-sinks this) (conj (.-sinks this) e)) e)))
+      (set! (.-sinks this) (conj (.-sinks this) e))
+      (set! (.-sources e) (conj (.-sources e) this)) e)))
