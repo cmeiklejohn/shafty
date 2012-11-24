@@ -54,6 +54,13 @@
   (bind! [this event]
     (bind-event! this event (fn [x] (identity x)))))
 
+(extend-type js/HTMLSpanElement
+  Observable
+  (bind! [this]
+    (bind-behaviour! this []
+                     (fn [] (.-innerHTML this))
+                     (fn [x] (set! (.-innerHTML this) x)))))
+
 (extend-type js/HTMLTextAreaElement
   Observable
   (bind! [this]
