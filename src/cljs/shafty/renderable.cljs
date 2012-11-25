@@ -11,4 +11,5 @@
 
 (defprotocol Renderable
   "Renders content into the DOM from streams."
-  (insert! [this element] "Insert an element into the DOM."))
+  (insert! [this element]
+           "Insert an element into the DOM."))
