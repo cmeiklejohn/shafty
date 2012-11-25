@@ -90,8 +90,7 @@
   (event! [this event-type value-fn]
     (let [e (event)]
       (events/listen this event-type
-                     (fn [ev]
-                       (-notify-watches e nil (apply value-fn [ev])))) e))
+              (fn [ev] (-notify-watches e nil (apply value-fn [ev])))) e))
   (events! [this event-types]
     (events! this event-types (fn [x] (identity x))))
   (events! [this event-types value-fn]
