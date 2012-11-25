@@ -12,22 +12,16 @@
 ;; Example similar to the example in Section 2.3 of the Flapjax paper.
 ;;
 (ns shafty.examples.autosave
-  (:use [shafty.observable :only [event! behaviour!]]
-        [shafty.event-stream :only [merge! map! snapshot!]]
+  (:use [shafty.event-stream :only [merge! map! snapshot!]]
+        [shafty.observable :only [event! behaviour!]]
+        [shafty.requestable :only [requests!]]
         [shafty.renderable :only [insert!]]
         [shafty.timer :only [timer!]])
   (:require [goog.dom :as dom]))
 
-; (defn- perform-save []
-;   "Perform the save."
-
-;   (let [element (dom/getElement "save-status")
-;         curtime (js/Date)]
-;     (set! (.-innerHTML element) (str "Last save at " curtime))))
-
-(defn- make-request [value]
+(defn- build-request [value]
   "Generate a request object."
-  { :url "/save" :fields { :value value } :request "post" })
+  { :url "/save" :data { :value value } :method "post" })
 
 (defn- live-content []
   "Generate a behaviour for the live content area."
@@ -45,6 +39,7 @@
       (map! (fn [x] (.log js/console "Button clicked.") x))
       (merge! (timer))
       (snapshot! (live-content))
-      (map! make-request))
+      (map! build-request)
+      (requests!))
 
   (.log js/console "Starting the autosave example."))

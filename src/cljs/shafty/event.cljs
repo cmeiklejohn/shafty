@@ -12,9 +12,10 @@
         [shafty.event-stream :only [EventStream merge!]]
         [shafty.propagatable :only [Propagatable propagate!]]
         [shafty.observable :only [Observable event! events!]]
+        [shafty.requestable :only [Requestable]]
         [shafty.behaviour :only [behaviour]])
-  (:require [goog.dom :as dom]
-            [goog.events :as events]))
+  (:require [goog.events :as events]
+            [goog.net.XhrIo :as xhrio]))
 
 (deftype Event [sinks sources watches]
   IWatchable
@@ -48,6 +49,16 @@
   (propagate! [this value]
     (let [sinks (.-sinks this)]
       (doall (map (fn [x] (-notify-watches x nil value)) sinks)))))
+
+(extend-type Event
+  Requestable
+  (requests! [this]
+    (let [e (event (fn [me x y a b]
+              (let [url (:url b)]
+                (xhrio/send url (fn [ev]
+                                  (propagate! me (.-target ev)))))))]
+      (set! (.-sinks this) (conj (.-sinks this) e))
+      (set! (.-sources e) (conj (.-sources e) this)) e)))
 
 (extend-type Event
   EventStream
