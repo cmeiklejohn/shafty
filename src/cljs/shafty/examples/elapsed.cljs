@@ -19,11 +19,12 @@
 ;; insertValueB(elapsedB, "curTime", "innerHTML");
 ;;
 (ns shafty.examples.elapsed
-  (:use [shafty.observable :only [event!]]
-        [shafty.event-stream :only [merge! map! snapshot!]]
+  (:use [shafty.event-stream :only [merge! map! snapshot!]]
         [shafty.behaviour-conversion :only [hold!]]
-        [shafty.liftable :only [lift!]]
+        [shafty.observable :only [event!]]
+        [shafty.requestable :only [requests!]]
         [shafty.renderable :only [insert!]]
+        [shafty.liftable :only [lift!]]
         [shafty.timer :only [timer!]])
   (:require [goog.dom :as dom]))
 
