@@ -64,6 +64,7 @@
   (insert! [this element]
     (-add-watch this (gensym "watch") (fn [x y a b]
                                      (set! (.-innerHTML element) b)))
+    (set! (.-innerHTML element) (deref this))
     this))
 
 (extend-type js/HTMLElement
