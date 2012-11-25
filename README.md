@@ -27,10 +27,9 @@ particular DOM element, such as an input field.
 
 * Figure out how to properly perform the multi-arity lift, and replace
   the examples with that.
-* Add a requests! function for taking a series of web requests and
-  returning web responses.
 * Fix elapsed demo with proper lifting.
 * Switching.
+* Clean up repetition in shafty.event.
 
 ## References
 
