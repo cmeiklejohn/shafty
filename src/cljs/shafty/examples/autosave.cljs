@@ -11,28 +11,40 @@
 ;;
 ;; Example similar to the example in Section 2.3 of the Flapjax paper.
 ;;
-;; TODO: This example is currently incomplete.
-;;
 (ns shafty.examples.autosave
-  (:use [shafty.observable :only [bind! bind-timer!]]
-        [shafty.event-stream :only [merge! map! snapshot!]])
+  (:use [shafty.observable :only [event! behaviour!]]
+        [shafty.event-stream :only [merge! map! snapshot!]]
+        [shafty.renderable :only [insert!]]
+        [shafty.timer :only [timer!]])
   (:require [goog.dom :as dom]))
 
-(defn- perform-save []
-  "Perform the save."
+; (defn- perform-save []
+;   "Perform the save."
 
-  (let [element (dom/getElement "save-status")
-        curtime (js/Date)]
-    (set! (.-innerHTML element) (str "Last save at " curtime))))
+;   (let [element (dom/getElement "save-status")
+;         curtime (js/Date)]
+;     (set! (.-innerHTML element) (str "Last save at " curtime))))
 
 (defn- make-request [value]
   "Generate a request object."
   { :url "/save" :fields { :value value } :request "post" })
 
+(defn- live-content []
+  "Generate a behaviour for the live content area."
+  (behaviour! (dom/getElement "live-content") nil))
+
+(defn- timer []
+  "Generate a timer."
+  (-> (timer! 10000 (fn [] (js/Date.)))
+      (map! (fn [x] (.log js/console "Timer ticked.") x))))
+
 (defn main []
   "Run the autosave example."
 
-  (-> (bind! (dom/getElement "save-button"))
-      (merge! (bind-timer! 10000))
-      (snapshot! (bind! (dom/getElement "live-content")))
-      (map! make-request)))
+  (-> (event! (dom/getElement "save-button") "click")
+      (map! (fn [x] (.log js/console "Button clicked.") x))
+      (merge! (timer))
+      (snapshot! (live-content))
+      (map! make-request))
+
+  (.log js/console "Starting the autosave example."))
