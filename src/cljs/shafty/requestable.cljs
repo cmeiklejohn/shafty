@@ -7,4 +7,11 @@
 ;; this license. You must not remove this notice, or any other, from
 ;; this software.
 ;;
-(ns shafty.core)
+(ns shafty.requestable)
+
+(defprotocol Requestable
+  "Provide a mechanism for processing event streams composed of requests
+  and responses."
+  (requests! [this]
+             "Turn a series of requests into an event stream of
+             responses."))

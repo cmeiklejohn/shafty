@@ -1,20 +1,45 @@
+;; Copyright (c) Christopher Meiklejohn. All rights reserved.
+;;
+;; The use and distribution terms for this software are covered by the
+;; Eclipse Public License 1.0 which can be found in the file
+;; LICENSE.html at the root of this distribution.  By using this
+;; software in any fashion, you are agreeing to be bound by the terms of
+;; this license. You must not remove this notice, or any other, from
+;; this software.
+;;
+;; Autosave example.
+;;
+;; Example similar to the example in Section 2.3 of the Flapjax paper.
+;;
 (ns shafty.examples.autosave
-  (:use [shafty.observable :only [bind! bind-timer! bind-behaviour!]]
-        [shafty.event-stream :only [merge! map!]])
+  (:use [shafty.event-stream :only [merge! map! snapshot!]]
+        [shafty.observable :only [event! behaviour!]]
+        [shafty.requestable :only [requests!]]
+        [shafty.renderable :only [insert!]]
+        [shafty.timer :only [timer!]])
   (:require [goog.dom :as dom]))
 
-(defn- update-save-status []
-  (let [element (dom/getElement "save-status")
-        curtime (js/Date)
-        textarea (deref b1)]
-    (set! (.-innerHTML element) (str "Last save at " curtime))))
+(defn- build-request [value]
+  "Generate a request object."
+  { :url "/save" :data { :value value } :method "post" })
+
+(defn- live-content []
+  "Generate a behaviour for the live content area."
+  (behaviour! (dom/getElement "live-content") nil))
+
+(defn- timer []
+  "Generate a timer."
+  (-> (timer! 10000 (fn [] (js/Date.)))
+      (map! (fn [x] (.log js/console "Timer ticked.") x))))
 
 (defn main []
-  "Run the autosave example"
+  "Run the autosave example."
 
-  (let [e1 (bind-timer! 5000)
-        e2 (bind! (dom/getElement "save-button") "click")
-        e3 (merge! e1 e2)
-        e4 (map! e3 update-save-status)
-        b1 (bind! (dom/getElement "data"))]
-    (.log js/console "Running autosave example.")))
+  (-> (event! (dom/getElement "save-button") "click")
+      (map! (fn [x] (.log js/console "Button clicked.") x))
+      (merge! (timer))
+      (snapshot! (live-content))
+      (map! build-request)
+      (requests!))
+
+  (.log js/console "Starting the autosave example."))

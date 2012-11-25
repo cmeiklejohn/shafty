@@ -7,4 +7,9 @@
 ;; this license. You must not remove this notice, or any other, from
 ;; this software.
 ;;
-(ns shafty.core)
+(ns shafty.propagatable)
+
+(defprotocol Propagatable
+  "Provides a mechanism for propogating events and values."
+  (propagate! [this value]
+              "Propagate the value to all of the sinks."))

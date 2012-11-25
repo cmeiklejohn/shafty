@@ -1,5 +1,20 @@
+;; Copyright (c) Christopher Meiklejohn. All rights reserved.
+;;
+;; The use and distribution terms for this software are covered by the
+;; Eclipse Public License 1.0 which can be found in the file
+;; LICENSE.html at the root of this distribution.  By using this
+;; software in any fashion, you are agreeing to be bound by the terms of
+;; this license. You must not remove this notice, or any other, from
+;; this software.
+;;
 (ns shafty.behaviour
-  (:use [shafty.event-conversion :only [EventConversion]]))
+  (:use [shafty.event-conversion :only [EventConversion changes!]]
+        [shafty.behaviour-conversion :only [hold!]]
+        [shafty.event-stream :only [map! merge!]]
+        [shafty.propagatable :only [Propagatable propagate!]]
+        [shafty.renderable :only [Renderable insert!]]
+        [shafty.liftable :only [Liftable lift! lift2!]]
+        [shafty.observable :only [Observable events!]]))
 
 (deftype Behaviour [state stream watches]
   IDeref
@@ -20,8 +35,41 @@
   ([state stream]
    (let [e (Behaviour. state stream nil)]
      (-add-watch e (gensym "watch") (fn [x y a b]
-                                      (set! (.-state e) b))) e)))
+                                      (propagate! e (set! (.-state e) b))
+                                      )) e)))
 
 (extend-type Behaviour
   EventConversion
   (changes! [this] (.-stream this)))
+
+(extend-type Behaviour
+  Propagatable
+  (propagate! [this value]
+    (let [sinks (.-sinks this)]
+      (doall (map (fn [x] (-notify-watches x nil value)) sinks)))))
+
+(extend-type Behaviour
+  Liftable
+  (lift! [this lift-fn]
+    (-> (changes! this) (map! lift-fn) (hold! nil)))
+  (lift2! [this that lift-fn]
+    (lift2! this that lift-fn nil))
+  (lift2! [this that lift-fn initial]
+    (-> (merge! (changes! this) (changes! that))
+        (map! (fn [] (apply lift-fn [@this @that])))
+        (hold! initial))))
+
+(extend-type Behaviour
+  Renderable
+  (insert! [this element]
+    (-add-watch this (gensym "watch") (fn [x y a b]
+                                     (set! (.-innerHTML element) b)))
+    (set! (.-innerHTML element) (deref this))
+    this))
+
+(extend-type js/HTMLElement
+  Observable
+  (behaviour! [this initial]
+    (-> (events! this ["change" "keyup"])
+        (hold! initial)
+        (insert! this))))

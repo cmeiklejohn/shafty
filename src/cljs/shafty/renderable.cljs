@@ -7,4 +7,9 @@
 ;; this license. You must not remove this notice, or any other, from
 ;; this software.
 ;;
-(ns shafty.core)
+(ns shafty.renderable)
+
+(defprotocol Renderable
+  "Renders content into the DOM from streams."
+  (insert! [this element]
+           "Insert an element into the DOM."))
