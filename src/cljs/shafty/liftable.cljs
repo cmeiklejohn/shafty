@@ -7,4 +7,11 @@
 ;; this license. You must not remove this notice, or any other, from
 ;; this software.
 ;;
-(ns shafty.core)
+(ns shafty.liftable)
+
+(defprotocol Liftable
+  "Provide a mechanism for lifting functions onto behaviours."
+  (lift! [this lift-fn]
+         "Lift a function onto a behaviour.")
+  (lift2! [this that lift-fn] [this that lift-fn initial]
+         "Lift a function onto two behaviours."))

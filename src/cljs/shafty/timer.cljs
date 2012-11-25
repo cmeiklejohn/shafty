@@ -7,4 +7,15 @@
 ;; this license. You must not remove this notice, or any other, from
 ;; this software.
 ;;
-(ns shafty.core)
+(ns shafty.timer
+  (:use [shafty.event :only [event]]))
+
+(defn timer!
+  "Generate a new timer at a given interval, and bind to a new event
+  stream."
+  ([interval]
+   (timer! interval js/Date))
+  ([interval value-fn]
+   (let [e (event)]
+     (js/setInterval (fn []
+                       (-notify-watches e nil (value-fn))) interval) e)))

@@ -2,19 +2,27 @@
 <html lang='en'>
   <head>
     <meta charset='utf-8' />
-    <title>Test</title>
+    <title>Autosave Example</title>
     <script type="text/javascript">var CLOSURE_NO_DEPS = true;</script>
+
+    <style type="text/css">
+      .green {
+        color: green;
+      }
+    </style>
   </head>
   <body>
-    <p>This document will autosave every 5 seconds, or when save is
-      clicked.</p>
+    <p>This document will autosave every 10 seconds, or when save is clicked.</p>
 
-    <textarea id="data" cols="70" rows="20">This is the example copy.</textarea><br />
+    <p>This is the editor.</p>
 
-    <button id="save-button">Save</button>
-      <span style="color: green" id="save-status"></span>
+    <textarea id="live-content" cols="70" rows="10"></textarea><br />
+
+    <p>
+      <button id="save-button">Save</button>
+    </p>
 
     <script type="text/javascript" src="../../resources/public/examples.js"></script>
-    <script type="text/javascript">shafty.examples.autosave.main()</script>
+    <script type="text/javascript">shafty.examples.autosave.main();</script>
   </body>
 </html>
