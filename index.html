@@ -34,7 +34,9 @@
 
 <h2>Disclaimer</h2>
 
-<p>Shafty is currently under development and the API is subject to change.  Shafty shouldn't be used in production.</p>
+<p>Shafty is currently under development and the API is subject to change.</p>
+
+<p>Shafty shouldn't be used in production.</p>
 
 <p>Get in touch if you are interested in helping out.</p>
 
@@ -45,64 +47,18 @@
 <p>Events represent time-varying functions which have a finite set of
 occurences over time.</p>
 
-<div class="highlight"><pre><span class="p">(</span><span class="k">def </span><span class="nv">my-event</span> <span class="p">(</span><span class="nf">shafty/event</span><span class="p">))</span>
-</pre></div>
-
-<p>Compose event streams using filter!, map!, reduce!, etc.</p>
-
-<div class="highlight"><pre><span class="p">(</span><span class="k">def </span><span class="nv">my-filtered-event</span> <span class="p">(</span><span class="nf">shafty/filter!</span> <span class="nv">my-event</span>
-                                <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nb">= </span><span class="mi">1</span> <span class="nv">x</span><span class="p">))))</span>
-
-<span class="p">(</span><span class="k">def </span><span class="nv">my-mapped-event</span> <span class="p">(</span><span class="nf">shafty/map!</span> <span class="nv">my-event</span>
-                           <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nb">identity </span><span class="mi">1</span><span class="p">))))</span>
-
-<span class="p">(</span><span class="k">def </span><span class="nv">my-combo-event</span> <span class="p">(</span><span class="nf">shafty/merge!</span> <span class="nv">my-filtered-event</span>
-                                   <span class="nv">my-mapped-event</span><span class="p">))</span>
-
-<span class="p">(</span><span class="k">def </span><span class="nv">my-delayed-event</span> <span class="p">(</span><span class="nf">shafty/delay!</span> <span class="nv">my-filtered-event</span> <span class="mi">50000</span><span class="p">)</span>
-</pre></div>
-
 <h3>Behaviours</h3>
 
-<p>Behaviours are time-varying functions which constantly have a value. Derive a behaviour from an event, or generate a receiver to watch a particular DOM element, such as an input field.</p>
+<p>Behaviours are time-varying functions which constantly have a value.
+Derive a behaviour from an event, or generate a receiver to watch a
+particular DOM element, such as an input field.</p>
 
-<p>Behaviours share the same IEventStream protocol, so you can also use merge!, delay!, map!, filter!, etc. to compose them.</p>
+<h2>Incomplete</h2>
 
-<p>You can also call changes! to convert a Behaviour back to an Event.</p>
-
-<div class="highlight"><pre><span class="p">(</span><span class="k">def </span><span class="nv">my-behaviour-of-ones</span> <span class="p">(</span><span class="nf">shafty/hold!</span> <span class="nv">my-filtered-event</span> <span class="mi">1</span><span class="p">))</span>
-
-<span class="p">(</span><span class="k">def </span><span class="nv">my-behaviour-as-event</span> <span class="p">(</span><span class="nf">shafty/changes!</span> <span class="nv">my-behaviour-of-ones</span><span class="p">))</span>
-</pre></div>
-
-<h2>Examples</h2>
-
-<p>The repository contains a series of examples in the
-<code>shafty.examples</code> namespace. Included below is a simple example of a Google-docs like autosave feature built using shafty.</p>
-
-<div class="highlight"><pre><span class="p">(</span><span class="kd">ns </span><span class="nv">shafty.examples.autosave</span>
-  <span class="p">(</span><span class="ss">:use</span> <span class="p">[</span><span class="nv">shafty.observable</span> <span class="ss">:only</span> <span class="p">[</span><span class="nv">bind!</span> <span class="nv">bind-timer!</span> <span class="nv">bind-behaviour!</span><span class="p">]]</span>
-        <span class="p">[</span><span class="nv">shafty.event-stream</span> <span class="ss">:only</span> <span class="p">[</span><span class="nv">merge!</span> <span class="nv">map!</span><span class="p">]])</span>
-  <span class="p">(</span><span class="ss">:require</span> <span class="p">[</span><span class="nv">goog.dom</span> <span class="ss">:as</span> <span class="nv">dom</span><span class="p">]))</span>
-
-<span class="p">(</span><span class="kd">defn- </span><span class="nv">update-save-status</span> <span class="p">[]</span>
-  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">element</span> <span class="p">(</span><span class="nf">dom/getElement</span> <span class="s">"save-status"</span><span class="p">)</span>
-        <span class="nv">curtime</span> <span class="p">(</span><span class="nf">js/Date</span><span class="p">)</span>
-        <span class="nv">textarea</span> <span class="p">(</span><span class="nb">deref </span><span class="nv">b1</span><span class="p">)]</span>
-    <span class="p">(</span><span class="nf">set!</span> <span class="p">(</span><span class="nf">.-innerHTML</span> <span class="nv">element</span><span class="p">)</span> <span class="p">(</span><span class="nb">str </span><span class="s">"Last save at "</span> <span class="nv">curtime</span><span class="p">))))</span>
-
-<span class="p">(</span><span class="kd">defn </span><span class="nv">main</span> <span class="p">[]</span>
-  <span class="s">"Run the autosave example"</span>
-
-  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">e1</span> <span class="p">(</span><span class="nf">bind-timer!</span> <span class="mi">5000</span><span class="p">)</span>
-        <span class="nv">e2</span> <span class="p">(</span><span class="nf">bind!</span> <span class="p">(</span><span class="nf">dom/getElement</span> <span class="s">"save-button"</span><span class="p">)</span> <span class="s">"click"</span><span class="p">)</span>
-        <span class="nv">e3</span> <span class="p">(</span><span class="nf">merge!</span> <span class="nv">e1</span> <span class="nv">e2</span><span class="p">)</span>
-        <span class="nv">e4</span> <span class="p">(</span><span class="nf">map!</span> <span class="nv">e3</span> <span class="nv">update-save-status</span><span class="p">)</span>
-        <span class="nv">b1</span> <span class="p">(</span><span class="nf">bind!</span> <span class="p">(</span><span class="nf">dom/getElement</span> <span class="s">"data"</span><span class="p">))]</span>
-    <span class="p">(</span><span class="nf">.log</span> <span class="nv">js/console</span> <span class="s">"Running autosave example."</span><span class="p">)))</span>
-</pre></div>
-
-<h2>References</h2>
+<ul>
+<li>Switching.</li>
+<li>Clean up repetition in shafty.event.</li>
+</ul><h2>References</h2>
 
 <ul>
 <li>Elliott, <a href="http://dl.acm.org/citation.cfm?id=1596643"><em>Push-Pull Functional Reactive Programming</em></a>
@@ -111,7 +67,64 @@ occurences over time.</p>
 </li>
 <li>Meyerovich, Guha, Baskin, Cooper, Greenberg, Bromfield,  Krishnamurthi, <a href="http://dl.acm.org/citation.cfm?id=1640091"><em>Flapjax: A Programming Language for Ajax Applications</em></a>
 </li>
-</ul><h2>License</h2>
+</ul><h2>Examples</h2>
+
+<h3>Elapsed Timer</h3>
+
+<div class="highlight"><pre><span class="p">(</span><span class="kd">defn- </span><span class="nv">timer</span> <span class="p">[]</span>
+  <span class="s">"Generate a timer, and convert the timer into a behaviour."</span>
+  <span class="p">(</span><span class="nb">-&gt; </span><span class="p">(</span><span class="nf">timer!</span> <span class="mi">1000</span> <span class="p">(</span><span class="k">fn </span><span class="p">[]</span> <span class="p">(</span><span class="nf">js/Date.</span><span class="p">)))</span>
+      <span class="p">(</span><span class="nf">map!</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nf">.log</span> <span class="nv">js/console</span> <span class="s">"Timer ticked."</span><span class="p">)</span> <span class="nv">x</span><span class="p">))</span>
+      <span class="p">(</span><span class="nf">hold!</span> <span class="p">(</span><span class="nf">js/Date.</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="kd">defn- </span><span class="nv">reset</span> <span class="p">[</span><span class="nv">timer</span><span class="p">]</span>
+  <span class="s">"Generate a behaviour originating from click events on the reset</span>
+<span class="s">  button.  When clicked, snapshot the current state of the timer."</span>
+  <span class="p">(</span><span class="nb">-&gt; </span><span class="p">(</span><span class="nf">event!</span> <span class="p">(</span><span class="nf">dom/getElement</span> <span class="s">"reset-button"</span><span class="p">)</span> <span class="s">"click"</span><span class="p">)</span>
+      <span class="p">(</span><span class="nf">snapshot!</span> <span class="nv">timer</span><span class="p">)</span>
+      <span class="p">(</span><span class="nf">map!</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nf">.log</span> <span class="nv">js/console</span> <span class="s">"Reset button clicked."</span><span class="p">)</span> <span class="nv">x</span><span class="p">))</span>
+      <span class="p">(</span><span class="nf">hold!</span> <span class="p">(</span><span class="nf">js/Date.</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">main</span> <span class="p">[]</span>
+  <span class="s">"Run the elapsed time example."</span>
+
+  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">the-timer</span> <span class="p">(</span><span class="nf">timer</span><span class="p">)</span>
+        <span class="nv">reset-button</span> <span class="p">(</span><span class="nf">reset</span> <span class="nv">the-timer</span><span class="p">)]</span>
+    <span class="p">(</span><span class="nb">-&gt; </span><span class="p">(</span><span class="nf">lift2!</span> <span class="nv">the-timer</span> <span class="nv">reset-button</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">now</span> <span class="nv">click</span><span class="p">]</span> <span class="p">(</span><span class="nb">- </span><span class="nv">now</span> <span class="nv">click</span><span class="p">))</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">(</span><span class="nf">insert!</span> <span class="p">(</span><span class="nf">dom/getElement</span> <span class="s">"elapsed"</span><span class="p">))))</span>
+
+  <span class="p">(</span><span class="nf">.log</span> <span class="nv">js/console</span> <span class="s">"Starting the elapsed time example."</span><span class="p">))</span>
+</pre></div>
+
+<h3>Autosave</h3>
+
+<div class="highlight"><pre><span class="p">(</span><span class="kd">defn- </span><span class="nv">build-request</span> <span class="p">[</span><span class="nv">value</span><span class="p">]</span>
+  <span class="s">"Generate a request object."</span>
+  <span class="p">{</span> <span class="ss">:url</span> <span class="s">"/save"</span> <span class="ss">:data</span> <span class="p">{</span> <span class="ss">:value</span> <span class="nv">value</span> <span class="p">}</span> <span class="ss">:method</span> <span class="s">"post"</span> <span class="p">})</span>
+
+<span class="p">(</span><span class="kd">defn- </span><span class="nv">live-content</span> <span class="p">[]</span>
+  <span class="s">"Generate a behaviour for the live content area."</span>
+  <span class="p">(</span><span class="nf">behaviour!</span> <span class="p">(</span><span class="nf">dom/getElement</span> <span class="s">"live-content"</span><span class="p">)</span> <span class="nv">nil</span><span class="p">))</span>
+
+<span class="p">(</span><span class="kd">defn- </span><span class="nv">timer</span> <span class="p">[]</span>
+  <span class="s">"Generate a timer."</span>
+  <span class="p">(</span><span class="nb">-&gt; </span><span class="p">(</span><span class="nf">timer!</span> <span class="mi">10000</span> <span class="p">(</span><span class="k">fn </span><span class="p">[]</span> <span class="p">(</span><span class="nf">js/Date.</span><span class="p">)))</span>
+      <span class="p">(</span><span class="nf">map!</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nf">.log</span> <span class="nv">js/console</span> <span class="s">"Timer ticked."</span><span class="p">)</span> <span class="nv">x</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">main</span> <span class="p">[]</span>
+  <span class="s">"Run the autosave example."</span>
+
+  <span class="p">(</span><span class="nb">-&gt; </span><span class="p">(</span><span class="nf">event!</span> <span class="p">(</span><span class="nf">dom/getElement</span> <span class="s">"save-button"</span><span class="p">)</span> <span class="s">"click"</span><span class="p">)</span>
+      <span class="p">(</span><span class="nf">map!</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nf">.log</span> <span class="nv">js/console</span> <span class="s">"Button clicked."</span><span class="p">)</span> <span class="nv">x</span><span class="p">))</span>
+      <span class="p">(</span><span class="nf">merge!</span> <span class="p">(</span><span class="nf">timer</span><span class="p">))</span>
+      <span class="p">(</span><span class="nf">snapshot!</span> <span class="p">(</span><span class="nf">live-content</span><span class="p">))</span>
+      <span class="p">(</span><span class="nf">map!</span> <span class="nv">build-request</span><span class="p">)</span>
+      <span class="p">(</span><span class="nf">requests!</span><span class="p">))</span>
+
+  <span class="p">(</span><span class="nf">.log</span> <span class="nv">js/console</span> <span class="s">"Starting the autosave example."</span><span class="p">))</span>
+</pre></div>
+
+<h2>License</h2>
 
 <p>Copyright (C) 2012 Christopher Meiklejohn.</p>
 
