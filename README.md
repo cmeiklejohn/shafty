@@ -37,6 +37,37 @@ particular DOM element, such as an input field.
 * Meyerovich, [_Flapjax: Functional Reactive Web Programming_](http://www.cs.brown.edu/research/pubs/theses/ugrad/2007/lmeyerov.pdf)
 * Meyerovich, Guha, Baskin, Cooper, Greenberg, Bromfield,  Krishnamurthi, [_Flapjax: A Programming Language for Ajax Applications_](http://dl.acm.org/citation.cfm?id=1640091)
 
+## Examples
+
+### Autosave form
+
+```clojure
+(defn- build-request [value]
+  "Generate a request object."
+  { :url "/save" :data { :value value } :method "post" })
+
+(defn- live-content []
+  "Generate a behaviour for the live content area."
+  (behaviour! (dom/getElement "live-content") nil))
+
+(defn- timer []
+  "Generate a timer."
+  (-> (timer! 10000 (fn [] (js/Date.)))
+      (map! (fn [x] (.log js/console "Timer ticked.") x))))
+
+(defn main []
+  "Run the autosave example."
+
+  (-> (event! (dom/getElement "save-button") "click")
+      (map! (fn [x] (.log js/console "Button clicked.") x))
+      (merge! (timer))
+      (snapshot! (live-content))
+      (map! build-request)
+      (requests!))
+
+  (.log js/console "Starting the autosave example."))
+```
+
 ## License
 
 Copyright (C) 2012 Christopher Meiklejohn.
