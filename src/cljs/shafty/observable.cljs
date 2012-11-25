@@ -10,11 +10,10 @@
 (ns shafty.observable)
 
 (defprotocol Observable
-  "Generate observables from browser elements or events."
-  (bind! [this]
-         "Generate a single binding for one event with the default event
-         type.")
-  (bind-one! [this] [this event-type] [this event-type value-fn]
-             "Generate a single binding for one event.")
-  (bind-many! [this] [this event-types] [this event-types value-fn]
-         "Generate bindings for many events."))
+  "Generate events or behaviours from browser elements or events."
+  (behaviour! [this initial]
+              "Generate a behaviour from a browser element.")
+  (event! [this event-type] [this event-type value-fn]
+          "Generate an event from a DOM event.")
+  (events! [this event-types] [this event-type value-fn]
+          "Generate an event from DOM events."))

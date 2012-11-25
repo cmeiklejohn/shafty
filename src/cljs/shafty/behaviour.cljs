@@ -10,10 +10,11 @@
 (ns shafty.behaviour
   (:use [shafty.event-conversion :only [EventConversion changes!]]
         [shafty.behaviour-conversion :only [hold!]]
-        [shafty.event-stream :only [map!]]
+        [shafty.event-stream :only [map! merge!]]
         [shafty.propagatable :only [Propagatable propagate!]]
-        [shafty.renderable :only [Renderable]]
+        [shafty.renderable :only [Renderable insert!]]
         [shafty.liftable :only [Liftable]]
+        [shafty.observable :only [Observable events!]]))
 
 (deftype Behaviour [state stream watches]
   IDeref
@@ -34,7 +35,8 @@
   ([state stream]
    (let [e (Behaviour. state stream nil)]
      (-add-watch e (gensym "watch") (fn [x y a b]
-                                      (propagate! e (set! (.-state e) b)))) e)))
+                                      (propagate! e (set! (.-state e) b))
+                                      )) e)))
 
 (extend-type Behaviour
   EventConversion
@@ -54,5 +56,13 @@
 (extend-type Behaviour
   Renderable
   (insert! [this element]
-    (.log js/console "Rendering.")))
+    (-add-watch this (gensym "watch") (fn [x y a b]
+                                     (set! (.-innerHTML element) b)))
+    this))
 
+(extend-type js/HTMLElement
+  Observable
+  (behaviour! [this initial]
+    (-> (events! this ["change" "keyup"])
+        (hold! initial)
+        (insert! this))))
