@@ -24,7 +24,7 @@
         [shafty.observable :only [event!]]
         [shafty.requestable :only [requests!]]
         [shafty.renderable :only [insert!]]
-        [shafty.liftable :only [lift!]]
+        [shafty.liftable :only [lift! lift2!]]
         [shafty.timer :only [timer!]])
   (:require [goog.dom :as dom]))
 
@@ -47,7 +47,7 @@
 
   (let [the-timer (timer)
         reset-button (reset the-timer)]
-    (-> (lift! the-timer (fn [x] (- x (deref reset-button))))
+    (-> (lift2! the-timer reset-button (fn [now click] (- now click)) 0)
         (insert! (dom/getElement "elapsed"))))
 
   (.log js/console "Starting the elapsed time example."))

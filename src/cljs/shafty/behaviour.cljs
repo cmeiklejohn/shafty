@@ -13,7 +13,7 @@
         [shafty.event-stream :only [map! merge!]]
         [shafty.propagatable :only [Propagatable propagate!]]
         [shafty.renderable :only [Renderable insert!]]
-        [shafty.liftable :only [Liftable]]
+        [shafty.liftable :only [Liftable lift! lift2!]]
         [shafty.observable :only [Observable events!]]))
 
 (deftype Behaviour [state stream watches]
@@ -51,7 +51,13 @@
 (extend-type Behaviour
   Liftable
   (lift! [this lift-fn]
-    (hold! (map! (changes! this) lift-fn) nil)))
+    (-> (changes! this) (map! lift-fn) (hold! nil)))
+  (lift2! [this that lift-fn]
+    (lift2! this that lift-fn nil))
+  (lift2! [this that lift-fn initial]
+    (-> (merge! (changes! this) (changes! that))
+        (map! (fn [] (apply lift-fn [@this @that])))
+        (hold! initial))))
 
 (extend-type Behaviour
   Renderable

@@ -25,9 +25,6 @@ particular DOM element, such as an input field.
 
 ## Incomplete
 
-* Figure out how to properly perform the multi-arity lift, and replace
-  the examples with that.
-* Fix elapsed demo with proper lifting.
 * Switching.
 * Clean up repetition in shafty.event.
 
@@ -39,7 +36,35 @@ particular DOM element, such as an input field.
 
 ## Examples
 
-### Autosave form
+### Elapsed Timer
+
+```clojure
+(defn- timer []
+  "Generate a timer, and convert the timer into a behaviour."
+  (-> (timer! 1000 (fn [] (js/Date.)))
+      (map! (fn [x] (.log js/console "Timer ticked.") x))
+      (hold! (js/Date.))))
+
+(defn- reset [timer]
+  "Generate a behaviour originating from click events on the reset
+  button.  When clicked, snapshot the current state of the timer."
+  (-> (event! (dom/getElement "reset-button") "click")
+      (snapshot! timer)
+      (map! (fn [x] (.log js/console "Reset button clicked.") x))
+      (hold! (js/Date.))))
+
+(defn main []
+  "Run the elapsed time example."
+
+  (let [the-timer (timer)
+        reset-button (reset the-timer)]
+    (-> (lift2! the-timer reset-button (fn [now click] (- now click)) 0)
+        (insert! (dom/getElement "elapsed"))))
+
+  (.log js/console "Starting the elapsed time example."))
+```
+
+### Autosave
 
 ```clojure
 (defn- build-request [value]
