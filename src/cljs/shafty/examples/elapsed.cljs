@@ -18,8 +18,6 @@
 ;; var elapsedB = nowB - clickTmsB;
 ;; insertValueB(elapsedB, "curTime", "innerHTML");
 ;;
-;; TODO: This example is currently incomplete.
-;;
 (ns shafty.examples.elapsed
   (:use [shafty.observable :only [event!]]
         [shafty.event-stream :only [merge! map! snapshot!]]
@@ -45,6 +43,7 @@
 
 (defn main []
   "Run the elapsed time example."
+
   (let [the-timer (timer)
         reset-button (reset the-timer)]
     (-> (lift! the-timer (fn [x] (- x (deref reset-button))))
