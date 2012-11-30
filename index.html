@@ -36,8 +36,6 @@
 
 <p>Shafty is currently under development and the API is subject to change.</p>
 
-<p>Shafty shouldn't be used in production.</p>
-
 <p>Get in touch if you are interested in helping out.</p>
 
 <h2>Usage</h2>
@@ -56,8 +54,25 @@ particular DOM element, such as an input field.</p>
 <h2>Incomplete</h2>
 
 <ul>
-<li>Switching.</li>
-<li>Clean up repetition in shafty.event.</li>
+<li>Functionality to add
+
+<ul>
+<li>switch!.</li>
+<li><del>send! for streams, remove explicit -notify-watchers.</del></li>
+</ul>
+</li>
+<li>Explore
+
+<ul>
+<li>Topological propagation.</li>
+<li>Delayed value propagation and queueing of events.</li>
+<li>Adding a sentinal value instead of explicit propagate! calls.</li>
+<li>Event constructors taking sources.</li>
+<li>Function to add sinks instead of direct set! command.</li>
+<li>Change order of arugments to core functions?</li>
+<li>Time stepping.</li>
+</ul>
+</li>
 </ul><h2>References</h2>
 
 <ul>
