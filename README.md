@@ -25,7 +25,7 @@ particular DOM element, such as an input field.
 
 * Functionality to add
   * switch!.
-  * send! for streams, remove explicit -notify-watchers.
+  * ~~send! for streams, remove explicit -notify-watchers.~~
 * Explore
   * Topological propagation.
   * Delayed value propagation and queueing of events.

@@ -12,4 +12,6 @@
 (defprotocol Propagatable
   "Provides a mechanism for propogating events and values."
   (propagate! [this value]
-              "Propagate the value to all of the sinks."))
+              "Propagate the value to all of the sinks.")
+  (send! [this value]
+         "Notify object of a new value."))

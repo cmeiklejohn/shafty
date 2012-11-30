@@ -10,7 +10,7 @@
 (ns shafty.event
   (:use [shafty.behaviour-conversion :only [BehaviourConversion]]
         [shafty.event-stream :only [EventStream merge!]]
-        [shafty.propagatable :only [Propagatable propagate!]]
+        [shafty.propagatable :only [Propagatable propagate! send!]]
         [shafty.observable :only [Observable event! events!]]
         [shafty.requestable :only [Requestable]]
         [shafty.behaviour :only [behaviour]])
@@ -48,7 +48,10 @@
   Propagatable
   (propagate! [this value]
     (let [sinks (.-sinks this)]
-      (doall (map (fn [x] (-notify-watches x nil value)) sinks)))))
+      (doall (map (fn [x] (send! x value)) sinks))))
+
+  (send! [this value]
+    (-notify-watches this nil value)))
 
 (extend-type Event
   Requestable
@@ -101,7 +104,7 @@
   (event! [this event-type value-fn]
     (let [e (event)]
       (events/listen this event-type
-              (fn [ev] (-notify-watches e nil (apply value-fn [ev])))) e))
+              (fn [ev] (send! e (apply value-fn [ev])))) e))
   (events! [this event-types]
     (events! this event-types (fn [x] (identity x))))
   (events! [this event-types value-fn]

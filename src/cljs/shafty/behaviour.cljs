@@ -11,7 +11,7 @@
   (:use [shafty.event-conversion :only [EventConversion changes!]]
         [shafty.behaviour-conversion :only [hold!]]
         [shafty.event-stream :only [map! merge!]]
-        [shafty.propagatable :only [Propagatable propagate!]]
+        [shafty.propagatable :only [Propagatable propagate! send!]]
         [shafty.renderable :only [Renderable insert!]]
         [shafty.liftable :only [Liftable lift! lift2!]]
         [shafty.observable :only [Observable events!]]))
@@ -46,7 +46,10 @@
   Propagatable
   (propagate! [this value]
     (let [sinks (.-sinks this)]
-      (doall (map (fn [x] (-notify-watches x nil value)) sinks)))))
+      (doall (map (fn [x] (send! x value)) sinks))))
+
+  (send! [this value]
+    (-notify-watches this nil value)))
 
 (extend-type Behaviour
   Liftable
