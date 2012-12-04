@@ -10,7 +10,7 @@
 (ns shafty.event
   (:use [shafty.behaviour-conversion :only [BehaviourConversion]]
         [shafty.event-stream :only [EventStream merge!]]
-        [shafty.propagatable :only [Propagatable propagate! send!]]
+        [shafty.propagatable :only [Propagatable propagate! send! add-sink!]]
         [shafty.observable :only [Observable event! events!]]
         [shafty.requestable :only [Requestable]]
         [shafty.behaviour :only [behaviour]])
@@ -52,13 +52,16 @@
   (send! [this value]
     (-notify-watches this nil value))
 
+  (add-sink! [this that]
+    (set! (.-sinks this) (conj (.-sinks this) that)))
+
   Requestable
   (requests! [this]
     (let [e (event (fn [me x y a b]
               (let [url (:url b)]
                 (xhrio/send url (fn [ev]
                                   (propagate! me (.-target ev)))))))]
-      (set! (.-sinks this) (conj (.-sinks this) e))
+      (add-sink! this e)
       (set! (.-sources e) (conj (.-sources e) this)) e))
 
   EventStream
@@ -66,32 +69,32 @@
     (let [e (event (fn [me x y a b]
                      (let [v (apply filter-fn [b])]
                        (if (true? v) (propagate! me b)))))]
-      (set! (.-sinks this) (conj (.-sinks this) e))
+      (add-sink! this e)
       (set! (.-sources e) (conj (.-sources e) this)) e))
 
   (merge! [this that]
     (let [e (event)]
-      (set! (.-sinks this) (conj (.-sinks this) e))
-      (set! (.-sinks that) (conj (.-sinks that) e))
+      (add-sink! this e)
+      (add-sink! that e)
       (set! (.-sources e) (conj (.-sources e) this))
       (set! (.-sources e) (conj (.-sources e) that)) e))
 
   (map! [this map-fn]
     (let [e (event (fn [me x y a b]
                        (propagate! me (apply map-fn [b]))))]
-      (set! (.-sinks this) (conj (.-sinks this) e))
+      (add-sink! this e)
       (set! (.-sources e) (conj (.-sources e) this)) e))
 
   (delay! [this interval]
     (let [e (event (fn [me x y a b]
                        (js/setTimeout (fn []
                                         (propagate! me b)) interval)))]
-      (set! (.-sinks this) (conj (.-sinks this) e))
+      (add-sink! this e)
       (set! (.-sources e) (conj (.-sources e) this)) e))
 
   (snapshot! [this that]
     (let [e (event (fn [me x y a b] (propagate! me (deref that))))]
-      (set! (.-sinks this) (conj (.-sinks this) e))
+      (add-sink! this e)
       (set! (.-sources e) (conj (.-sources e) this)) e)))
 
 (extend-type js/HTMLElement

@@ -14,4 +14,6 @@
   (propagate! [this value]
               "Propagate the value to all of the sinks.")
   (send! [this value]
-         "Notify object of a new value."))
+         "Notify object of a new value.")
+  (add-sink! [this that]
+             "Add a sink for propagation."))
