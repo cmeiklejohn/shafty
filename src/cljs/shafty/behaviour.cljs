@@ -40,18 +40,16 @@
 
 (extend-type Behaviour
   EventConversion
-  (changes! [this] (.-stream this)))
+  (changes! [this] (.-stream this))
 
-(extend-type Behaviour
   Propagatable
   (propagate! [this value]
     (let [sinks (.-sinks this)]
       (doall (map (fn [x] (send! x value)) sinks))))
 
   (send! [this value]
-    (-notify-watches this nil value)))
+    (-notify-watches this nil value))
 
-(extend-type Behaviour
   Liftable
   (lift! [this lift-fn]
     (-> (changes! this) (map! lift-fn) (hold! nil)))
@@ -60,9 +58,8 @@
   (lift2! [this that lift-fn initial]
     (-> (merge! (changes! this) (changes! that))
         (map! (fn [] (apply lift-fn [@this @that])))
-        (hold! initial))))
+        (hold! initial)))
 
-(extend-type Behaviour
   Renderable
   (insert! [this element]
     (-add-watch this (gensym "watch") (fn [x y a b]
