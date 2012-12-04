@@ -42,18 +42,16 @@
   BehaviourConversion
   (hold! [this initial]
     (let [b (behaviour initial this)]
-      (set! (.-sinks this) (conj (.-sinks this) b)) b)))
+      (set! (.-sinks this) (conj (.-sinks this) b)) b))
 
-(extend-type Event
   Propagatable
   (propagate! [this value]
     (let [sinks (.-sinks this)]
       (doall (map (fn [x] (send! x value)) sinks))))
 
   (send! [this value]
-    (-notify-watches this nil value)))
+    (-notify-watches this nil value))
 
-(extend-type Event
   Requestable
   (requests! [this]
     (let [e (event (fn [me x y a b]
@@ -61,9 +59,8 @@
                 (xhrio/send url (fn [ev]
                                   (propagate! me (.-target ev)))))))]
       (set! (.-sinks this) (conj (.-sinks this) e))
-      (set! (.-sources e) (conj (.-sources e) this)) e)))
+      (set! (.-sources e) (conj (.-sources e) this)) e))
 
-(extend-type Event
   EventStream
   (filter! [this filter-fn]
     (let [e (event (fn [me x y a b]
