@@ -66,16 +66,14 @@
 
   EventStream
   (filter! [this filter-fn]
-    (let [e (event (fn [me x y a b]
-                     (let [v (apply filter-fn [b])]
+    (let [e (event (fn [me x y a b] (let [v (apply filter-fn [b])]
                        (if (true? v) (propagate! me b)))))]
       (add-sink! this e)
       (set! (.-sources e) (conj (.-sources e) this)) e))
 
   (merge! [this that]
-    (let [e (event)]
-      (add-sink! this e)
-      (add-sink! that e)
+    (let [s (vector this that) e (event)]
+      (doall (map (fn [x] (add-sink! x e)) s))
       (set! (.-sources e) (conj (.-sources e) this))
       (set! (.-sources e) (conj (.-sources e) that)) e))
 
@@ -86,8 +84,7 @@
       (set! (.-sources e) (conj (.-sources e) this)) e))
 
   (delay! [this interval]
-    (let [e (event (fn [me x y a b]
-                       (js/setTimeout (fn []
+    (let [e (event (fn [me x y a b] (js/setTimeout (fn []
                                         (propagate! me b)) interval)))]
       (add-sink! this e)
       (set! (.-sources e) (conj (.-sources e) this)) e))
