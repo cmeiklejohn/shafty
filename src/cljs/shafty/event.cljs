@@ -17,7 +17,7 @@
   (:require [goog.events :as events]
             [goog.net.XhrIo :as xhrio]))
 
-(deftype Event [sinks sources watches]
+(deftype Event [sources sinks watches]
   IWatchable
   (-notify-watches [this oldval newval]
     (doseq [[key f] watches]
@@ -30,12 +30,8 @@
 (defn event
   "Define an event, which is a time-varying value with finite
   occurences."
-  ([]
-   (let [e (Event. nil nil nil)]
-     (-add-watch e (gensym "watch") (fn [x y a b]
-                                      (propagate! e b))) e))
-  ([update-fn]
-   (let [e (Event. nil nil nil)]
+  ([sources update-fn]
+   (let [e (Event. sources nil nil)]
      (-add-watch e (gensym "watch") (partial update-fn e)) e)))
 
 (extend-type Event
@@ -57,49 +53,37 @@
 
   Requestable
   (requests! [this]
-    (let [e (event (fn [me x y a b]
-              (let [url (:url b)]
-                (xhrio/send url (fn [ev]
-                                  (propagate! me (.-target ev)))))))]
-      (add-sink! this e)
-      (set! (.-sources e) (conj (.-sources e) this)) e))
+    (let [e (event [this] (fn [me x y a b] (let [url (:url b)] (xhrio/send url (fn [ev] (propagate! me (.-target ev)))))))]
+      (add-sink! this e) e))
 
   EventStream
   (filter! [this filter-fn]
-    (let [e (event (fn [me x y a b] (let [v (apply filter-fn [b])]
+    (let [e (event [this] (fn [me x y a b] (let [v (apply filter-fn [b])]
                        (if (true? v) (propagate! me b)))))]
-      (add-sink! this e)
-      (set! (.-sources e) (conj (.-sources e) this)) e))
+      (add-sink! this e) e))
 
   (merge! [this that]
-    (let [s (vector this that) e (event)]
-      (doall (map (fn [x] (add-sink! x e)) s))
-      (set! (.-sources e) (conj (.-sources e) this))
-      (set! (.-sources e) (conj (.-sources e) that)) e))
+    (let [s (vector this that) e (event s (fn [me x y a b] (propagate! me b)))]
+      (doall (map (fn [x] (add-sink! x e)) s)) e))
 
   (map! [this map-fn]
-    (let [e (event (fn [me x y a b]
-                       (propagate! me (apply map-fn [b]))))]
-      (add-sink! this e)
-      (set! (.-sources e) (conj (.-sources e) this)) e))
+    (let [e (event [this] (fn [me x y a b] (propagate! me (apply map-fn [b]))))]
+      (add-sink! this e) e))
 
   (delay! [this interval]
-    (let [e (event (fn [me x y a b] (js/setTimeout (fn []
-                                        (propagate! me b)) interval)))]
-      (add-sink! this e)
-      (set! (.-sources e) (conj (.-sources e) this)) e))
+    (let [e (event [this] (fn [me x y a b] (js/setTimeout (fn [] (propagate! me b)) interval)))]
+      (add-sink! this e) e))
 
   (snapshot! [this that]
-    (let [e (event (fn [me x y a b] (propagate! me (deref that))))]
-      (add-sink! this e)
-      (set! (.-sources e) (conj (.-sources e) this)) e)))
+    (let [e (event [this] (fn [me x y a b] (propagate! me (deref that))))]
+      (add-sink! this e) e)))
 
 (extend-type js/HTMLElement
   Observable
   (event! [this event-type]
     (event! this event-type (fn [x] (identity x))))
   (event! [this event-type value-fn]
-    (let [e (event)]
+    (let [e (event [] (fn [me x y a b] (propagate! me b)))]
       (events/listen this event-type
               (fn [ev] (send! e (apply value-fn [ev])))) e))
   (events! [this event-types]

@@ -9,7 +9,7 @@
 ;;
 (ns shafty.timer
   (:use [shafty.event :only [event]]
-        [shafty.propagatable :only [send!]]))
+        [shafty.propagatable :only [send! propagate!]]))
 
 (defn timer!
   "Generate a new timer at a given interval, and bind to a new event
@@ -17,6 +17,5 @@
   ([interval]
    (timer! interval js/Date))
   ([interval value-fn]
-   (let [e (event)]
-     (js/setInterval (fn []
-                       (send! e (value-fn))) interval) e)))
+   (let [e (event nil (fn [me x y a b] (propagate! me b)))]
+     (js/setInterval (fn [] (send! e (value-fn))) interval) e)))
