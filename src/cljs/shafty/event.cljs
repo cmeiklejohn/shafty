@@ -14,8 +14,8 @@
         [shafty.observable :only [Observable event! events!]]
         [shafty.requestable :only [Requestable]]
         [shafty.behaviour :only [behaviour]]
-        [clojure.browser.event :only [listen]])
-  (:require [goog.net.XhrIo :as xhrio]))
+        [clojure.browser.event :only [listen]]
+        [clojure.browser.net :only [xhr-connection transmit]]))
 
 (deftype Event [sources sinks watches]
   IWatchable
@@ -53,7 +53,10 @@
 
   Requestable
   (requests! [this]
-    (let [e (event [this] (fn [me x y a b] (let [url (:url b)] (xhrio/send url (fn [ev] (propagate! me (.-target ev)))))))]
+    (let [xhr (xhr-connection)
+          e (event [this] (fn [me x y a b]
+                            (let [url (:url b)]
+                              (transmit xhr url))))]
       (add-sink! this e) e))
 
   EventStream
