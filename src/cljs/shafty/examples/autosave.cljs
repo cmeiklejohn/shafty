@@ -16,8 +16,8 @@
         [shafty.observable :only [event! behaviour!]]
         [shafty.requestable :only [requests!]]
         [shafty.renderable :only [insert!]]
-        [shafty.timer :only [timer!]])
-  (:require [goog.dom :as dom]))
+        [shafty.timer :only [timer!]]
+        [clojure.browser.dom :only [get-element]]))
 
 (defn- build-request [value]
   "Generate a request object."
@@ -25,7 +25,7 @@
 
 (defn- live-content []
   "Generate a behaviour for the live content area."
-  (behaviour! (dom/getElement "live-content") nil))
+  (behaviour! (get-element "live-content") nil))
 
 (defn- timer []
   "Generate a timer."
@@ -35,7 +35,7 @@
 (defn main []
   "Run the autosave example."
 
-  (-> (event! (dom/getElement "save-button") "click")
+  (-> (event! (get-element "save-button") "click")
       (map! (fn [x] (.log js/console "Button clicked.") x))
       (merge! (timer))
       (snapshot! (live-content))

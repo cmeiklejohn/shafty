@@ -25,8 +25,8 @@
         [shafty.requestable :only [requests!]]
         [shafty.renderable :only [insert!]]
         [shafty.liftable :only [lift! lift2!]]
-        [shafty.timer :only [timer!]])
-  (:require [goog.dom :as dom]))
+        [shafty.timer :only [timer!]]
+        [clojure.browser.dom :only [get-element]]))
 
 (defn- timer []
   "Generate a timer, and convert the timer into a behaviour."
@@ -37,7 +37,7 @@
 (defn- reset [timer]
   "Generate a behaviour originating from click events on the reset
   button.  When clicked, snapshot the current state of the timer."
-  (-> (event! (dom/getElement "reset-button") "click")
+  (-> (event! (get-element "reset-button") "click")
       (snapshot! timer)
       (map! (fn [x] (.log js/console "Reset button clicked.") x))
       (hold! (js/Date.))))
@@ -48,6 +48,6 @@
   (let [the-timer (timer)
         reset-button (reset the-timer)]
     (-> (lift2! the-timer reset-button (fn [now click] (- now click)) 0)
-        (insert! (dom/getElement "elapsed"))))
+        (insert! (get-element "elapsed"))))
 
   (.log js/console "Starting the elapsed time example."))
