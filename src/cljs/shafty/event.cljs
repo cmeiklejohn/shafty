@@ -13,9 +13,9 @@
         [shafty.propagatable :only [Propagatable propagate! send! add-sink!]]
         [shafty.observable :only [Observable event! events!]]
         [shafty.requestable :only [Requestable]]
-        [shafty.behaviour :only [behaviour]])
-  (:require [goog.events :as events]
-            [goog.net.XhrIo :as xhrio]))
+        [shafty.behaviour :only [behaviour]]
+        [clojure.browser.event :only [listen]])
+  (:require [goog.net.XhrIo :as xhrio]))
 
 (deftype Event [sources sinks watches]
   IWatchable
@@ -84,8 +84,7 @@
     (event! this event-type (fn [x] (identity x))))
   (event! [this event-type value-fn]
     (let [e (event [] (fn [me x y a b] (propagate! me b)))]
-      (events/listen this event-type
-              (fn [ev] (send! e (apply value-fn [ev])))) e))
+      (listen this event-type (fn [ev] (send! e (apply value-fn [ev])))) e))
   (events! [this event-types]
     (events! this event-types (fn [x] (identity x))))
   (events! [this event-types value-fn]
