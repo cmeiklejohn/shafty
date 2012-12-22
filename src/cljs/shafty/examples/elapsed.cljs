@@ -44,10 +44,8 @@
 
 (defn main []
   "Run the elapsed time example."
-
   (let [the-timer (timer)
         reset-button (reset the-timer)]
     (-> (lift2! the-timer reset-button (fn [now click] (- now click)) 0)
         (insert! (get-element "elapsed"))))
-
   (.log js/console "Starting the elapsed time example."))

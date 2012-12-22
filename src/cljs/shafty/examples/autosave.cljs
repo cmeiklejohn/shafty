@@ -34,12 +34,10 @@
 
 (defn main []
   "Run the autosave example."
-
   (-> (event! (get-element "save-button") "click")
       (map! (fn [x] (.log js/console "Button clicked.") x))
       (merge! (timer))
       (snapshot! (live-content))
       (map! build-request)
       (requests!))
-
   (.log js/console "Starting the autosave example."))
