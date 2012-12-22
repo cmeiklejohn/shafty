@@ -17,7 +17,7 @@
         [clojure.browser.event :only [listen]]
         [clojure.browser.net :only [xhr-connection transmit]]))
 
-(deftype Event [sources sinks watches]
+(deftype Event [sources sinks rank watches]
   IWatchable
   (-notify-watches [this oldval newval]
     (doseq [[key f] watches]
@@ -31,7 +31,8 @@
   "Define an event, which is a time-varying value with finite
   occurences."
   ([sources update-fn]
-   (let [e (Event. sources nil nil)]
+   (let [max-source-rank (apply max (map #(.-rank %1) sources))
+         e (Event. sources nil (inc (or max-source-rank 0)) nil)]
      (-add-watch e (gensym "watch") (partial update-fn e)) e)))
 
 (extend-type Event
