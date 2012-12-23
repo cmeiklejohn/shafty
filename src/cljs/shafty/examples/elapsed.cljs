@@ -31,7 +31,7 @@
 (defn- timer []
   "Generate a timer, and convert the timer into a behaviour."
   (-> (timer! 1000 (fn [] (js/Date.)))
-      (map! (fn [x] (.log js/console "Timer ticked.") x))
+      (map! (fn [x] (.log js/console (str "Timer ticked at: " x)) x))
       (hold! (js/Date.))))
 
 (defn- reset [timer]
@@ -39,7 +39,7 @@
   button.  When clicked, snapshot the current state of the timer."
   (-> (event! (get-element "reset-button") "click")
       (snapshot! timer)
-      (map! (fn [x] (.log js/console "Reset button clicked.") x))
+      (map! (fn [x] (.log js/console (str "Reset button clicked at: " x)) x))
       (hold! (js/Date.))))
 
 (defn main []
