@@ -53,7 +53,7 @@
     (propagate! this value))
 
   (add-sink! [this that]
-    (set! (.-sinks this) (conj (.-sinks this) that)))
+    (set! (.-sinks this) (conj (.-sinks this) that)) this)
 
   Requestable
   (requests! [this]
