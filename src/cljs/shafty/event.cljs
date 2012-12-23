@@ -93,11 +93,14 @@
   Observable
   (event! [this event-type]
     (event! this event-type (fn [x] (identity x))))
+
   (event! [this event-type value-fn]
     (let [e (event [] (fn [me x] x))]
       (listen this event-type (fn [ev] (send! e (apply value-fn [ev])))) e))
+
   (events! [this event-types]
     (events! this event-types (fn [x] (identity x))))
+
   (events! [this event-types value-fn]
     (reduce (fn [acc x] (merge! acc x))
             (map (fn [event-type]
