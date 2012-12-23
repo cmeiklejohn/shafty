@@ -11,12 +11,12 @@
   (:use [shafty.event-conversion :only [EventConversion changes!]]
         [shafty.behaviour-conversion :only [hold!]]
         [shafty.event-stream :only [map! merge!]]
-        [shafty.propagatable :only [Propagatable propagate! send!]]
+        [shafty.propagatable :only [Propagatable send!]]
         [shafty.renderable :only [Renderable insert!]]
         [shafty.liftable :only [Liftable lift! lift2!]]
         [shafty.observable :only [Observable events!]]))
 
-(deftype Behaviour [state stream watches]
+(deftype Behaviour [state stream update-fn watches]
   IDeref
   (-deref [_] state)
 
@@ -33,20 +33,15 @@
   "Define a behaviour, which is a time-varying value providing constant
   values."
   ([state stream]
-   (let [e (Behaviour. state stream nil)]
+   (let [e (Behaviour. state stream (fn [me x] (send! me x)) nil)]
      (-add-watch e (gensym "watch") (fn [x y a b]
-                                      (propagate! e (set! (.-state e) b))
-                                      )) e)))
+                                      (set! (.-state e) b))) e)))
 
 (extend-type Behaviour
   EventConversion
   (changes! [this] (.-stream this))
 
   Propagatable
-  (propagate! [this value]
-    (let [sinks (.-sinks this)]
-      (doall (map (fn [x] (send! x value)) sinks))))
-
   (send! [this value]
     (-notify-watches this nil value))
 
@@ -63,7 +58,7 @@
   Renderable
   (insert! [this element]
     (-add-watch this (gensym "watch") (fn [x y a b]
-                                     (set! (.-innerHTML element) b)))
+                                        (set! (.-innerHTML element) b)))
     (set! (.-innerHTML element) (deref this))
     this))
 
