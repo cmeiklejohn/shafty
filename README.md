@@ -27,13 +27,13 @@ particular DOM element, such as an input field.
   * switch!.
   * ~~send! for streams, remove explicit -notify-watches.~~
 * Explore:
-  * Topological propagation.
-  * Delayed value propagation and queueing of events.
-  * Adding a sentinal value instead of explicit propagate! calls.
+  * ~~Topological propagation.~~
+  * ~~Delayed value propagation and queueing of events.~~
+  * ~~Adding a sentinal value instead of explicit propagate! calls.~~
   * ~~Event constructors taking sources.~~
   * ~~Function to add sinks instead of direct set! command.~~
   * ~~Change order of arugments to core functions?~~
-  * Time stepping.
+  * ~~Time stepping.~~
 
 ## References
 
