@@ -17,3 +17,9 @@
          "Notify object of a new value.")
   (add-sink! [this that]
              "Add a sink for propagation."))
+
+(declare SENTINEL)
+
+(deftype Sentinel [])
+
+(set! SENTINEL (Sentinel.))
