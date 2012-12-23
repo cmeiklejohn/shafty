@@ -9,7 +9,7 @@
 ;;
 (ns shafty.timer
   (:use [shafty.event :only [event]]
-        [shafty.propagatable :only [send! propagate!]]))
+        [shafty.propagatable :only [send!]]))
 
 (defn timer!
   "Generate a new timer at a given interval, and bind to a new event
