@@ -17,5 +17,5 @@
   ([interval]
    (timer! interval js/Date))
   ([interval value-fn]
-   (let [e (event nil (fn [me x y a b] (propagate! me b)))]
+   (let [e (event nil (fn [me x] x))]
      (js/setInterval (fn [] (send! e (value-fn))) interval) e)))

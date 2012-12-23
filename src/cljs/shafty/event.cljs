@@ -10,7 +10,8 @@
 (ns shafty.event
   (:use [shafty.behaviour-conversion :only [BehaviourConversion]]
         [shafty.event-stream :only [EventStream merge!]]
-        [shafty.propagatable :only [Propagatable propagate! send! add-sink!]]
+        [shafty.propagatable :only [Propagatable propagate!
+                                    send! add-sink! SENTINEL]]
         [shafty.observable :only [Observable event! events!]]
         [shafty.requestable :only [Requestable]]
         [shafty.behaviour :only [behaviour]]
@@ -33,7 +34,11 @@
   ([sources update-fn]
    (let [max-source-rank (apply max (map #(.-rank %1) sources))
          e (Event. sources nil (inc (or max-source-rank 0)) nil)]
-     (-add-watch e (gensym "watch") (partial update-fn e)) e)))
+     (-add-watch e (gensym "watch")
+                 (fn [x y a b]
+                   (let [ret (apply update-fn [e b])]
+                     (if (not= SENTINEL ret)
+                       (propagate! e ret))))) e)))
 
 (extend-type Event
   BehaviourConversion
@@ -55,31 +60,33 @@
   Requestable
   (requests! [this]
     (let [xhr (xhr-connection)
-          e (event [this] (fn [me x y a b]
-                            (let [url (:url b)]
+          e (event [this] (fn [me x]
+                            (let [url (:url x)]
                               (transmit xhr url))))]
       (add-sink! this e) e))
 
   EventStream
   (filter! [this filter-fn]
-    (let [e (event [this] (fn [me x y a b] (let [v (apply filter-fn [b])]
-                       (if (true? v) (propagate! me b)))))]
+    (let [e (event [this] (fn [me x] (let [v (apply filter-fn [x])]
+                       (if (true? v) x SENTINEL))))]
       (add-sink! this e) e))
 
   (merge! [this that]
-    (let [s (vector this that) e (event s (fn [me x y a b] (propagate! me b)))]
+    (let [s (vector this that)
+          e (event s (fn [me x] x))]
       (doall (map (fn [x] (add-sink! x e)) s)) e))
 
   (map! [this map-fn]
-    (let [e (event [this] (fn [me x y a b] (propagate! me (apply map-fn [b]))))]
+    (let [e (event [this] (fn [me x] (apply map-fn [x])))]
       (add-sink! this e) e))
 
   (delay! [this interval]
-    (let [e (event [this] (fn [me x y a b] (js/setTimeout (fn [] (propagate! me b)) interval)))]
+    (let [t (fn [me x] (js/setTimeout (fn [x] (send! me x)) interval))
+          e (event [this] t)]
       (add-sink! this e) e))
 
   (snapshot! [this that]
-    (let [e (event [this] (fn [me x y a b] (propagate! me (deref that))))]
+    (let [e (event [this] (fn [me x] (deref that)))]
       (add-sink! this e) e)))
 
 (extend-type js/HTMLElement
@@ -87,7 +94,7 @@
   (event! [this event-type]
     (event! this event-type (fn [x] (identity x))))
   (event! [this event-type value-fn]
-    (let [e (event [] (fn [me x y a b] (propagate! me b)))]
+    (let [e (event [] (fn [me x] x))]
       (listen this event-type (fn [ev] (send! e (apply value-fn [ev])))) e))
   (events! [this event-types]
     (events! this event-types (fn [x] (identity x))))
