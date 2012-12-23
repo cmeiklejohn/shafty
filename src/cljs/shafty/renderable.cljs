@@ -12,4 +12,6 @@
 (defprotocol Renderable
   "Renders content into the DOM from streams."
   (insert! [this element]
-           "Insert an element into the DOM."))
+           "Insert an element into the DOM.")
+  (add-outlet! [this that]
+               "Add a element to the list of renderable elements."))
