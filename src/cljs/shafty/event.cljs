@@ -18,27 +18,15 @@
         [clojure.browser.event :only [listen]]
         [clojure.browser.net :only [xhr-connection transmit]]))
 
-(deftype Event [sources sinks rank watches]
-  IWatchable
-  (-notify-watches [this oldval newval]
-    (doseq [[key f] watches]
-      (f key this oldval newval)))
-  (-add-watch [this key f]
-    (set! (.-watches this) (assoc watches key f)))
-  (-remove-watch [this key]
-    (set! (.-watches this) (dissoc watches key))))
+(deftype Event [sources sinks rank update-fn])
 
 (defn event
   "Define an event, which is a time-varying value with finite
   occurences."
   ([sources update-fn]
-   (let [max-source-rank (apply max (map #(.-rank %1) sources))
-         e (Event. sources nil (inc (or max-source-rank 0)) nil)]
-     (-add-watch e (gensym "watch")
-                 (fn [x y a b]
-                   (let [ret (apply update-fn [e b])]
-                     (if (not= SENTINEL ret)
-                       (propagate! e ret))))) e)))
+   (let [max-source-rank  (apply max (map #(.-rank %1) sources))
+         rank             (inc (or max-source-rank 0))]
+     (Event. sources nil rank update-fn))))
 
 (extend-type Event
   BehaviourConversion
@@ -48,11 +36,21 @@
 
   Propagatable
   (propagate! [this value]
-    (let [sinks (.-sinks this)]
-      (doall (map (fn [x] (send! x value)) sinks))))
+    (let [empty-queue   cljs.core.PersistentQueue/EMPTY
+          initial-value {:node this :value value}
+          initial-queue (conj empty-queue initial-value)]
+      (loop [pq initial-queue]
+        (if (= 0 (count pq))
+          value
+          (let [{:keys [node value]} (peek pq)
+                v                    (apply (.-update-fn node) [node value])]
+            (if (not= SENTINEL v)
+              (recur (reduce conj (pop pq)
+                (map (fn [y] {:node y :value v}) (.-sinks node))))
+              (recur (pop pq))))))))
 
   (send! [this value]
-    (-notify-watches this nil value))
+    (propagate! this value))
 
   (add-sink! [this that]
     (set! (.-sinks this) (conj (.-sinks this) that)))
