@@ -8,15 +8,16 @@
 ;; this software.
 ;;
 (ns shafty.event
-  (:use [shafty.behaviour-conversion :only [BehaviourConversion]]
-        [shafty.event-stream :only [EventStream merge!]]
-        [shafty.propagatable :only [Propagatable propagate!
-                                    send! add-sink! SENTINEL]]
-        [shafty.observable :only [Observable event! events!]]
-        [shafty.requestable :only [Requestable]]
-        [shafty.behaviour :only [behaviour]]
-        [clojure.browser.event :only [listen]]
-        [clojure.browser.net :only [xhr-connection transmit]]))
+  (:use [shafty.behaviour-conversion  :only [BehaviourConversion]]
+        [shafty.event-stream          :only [EventStream merge!]]
+        [shafty.propagatable          :only [Propagatable propagate!
+                                             send! add-sink! SENTINEL]]
+        [shafty.observable            :only [Observable event! events!]]
+        [shafty.requestable           :only [Requestable]]
+        [shafty.behaviour             :only [behaviour]]
+        [shafty.priority-map          :only [priority-map]]
+        [clojure.browser.event        :only [listen]]
+        [clojure.browser.net          :only [xhr-connection transmit]]))
 
 (deftype Event [sources sinks rank update-fn])
 

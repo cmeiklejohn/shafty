@@ -8,14 +8,15 @@
 ;; this software.
 ;;
 (ns shafty.behaviour
-  (:use [shafty.event-conversion :only [EventConversion changes!]]
-        [shafty.behaviour-conversion :only [hold!]]
-        [shafty.event-stream :only [map! merge!]]
-        [shafty.propagatable :only [Propagatable propagate!
-                                    send! add-sink!]]
-        [shafty.renderable :only [Renderable insert! add-outlet!]]
-        [shafty.liftable :only [Liftable lift! lift2!]]
-        [shafty.observable :only [Observable events!]]))
+  (:use [shafty.event-conversion      :only [EventConversion changes!]]
+        [shafty.behaviour-conversion  :only [hold!]]
+        [shafty.event-stream          :only [map! merge!]]
+        [shafty.propagatable          :only [Propagatable propagate!
+                                             send! add-sink!]]
+        [shafty.renderable            :only [Renderable insert!
+                                             add-outlet!]]
+        [shafty.liftable              :only [Liftable lift! lift2!]]
+        [shafty.observable            :only [Observable events!]]))
 
 (deftype Behaviour [state stream update-fn outlets]
   IDeref

@@ -8,7 +8,7 @@
 ;; this software.
 ;;
 (ns shafty.timer
-  (:use [shafty.event :only [event]]
+  (:use [shafty.event        :only [event]]
         [shafty.propagatable :only [send!]]))
 
 (defn timer!
