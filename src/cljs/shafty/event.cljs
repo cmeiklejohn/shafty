@@ -8,105 +8,99 @@
 ;; this software.
 ;;
 (ns shafty.event
-  (:use [shafty.behaviour-conversion :only [BehaviourConversion]]
-        [shafty.event-stream :only [EventStream merge!]]
-        [shafty.propagatable :only [Propagatable propagate! send!]]
-        [shafty.observable :only [Observable event! events!]]
-        [shafty.requestable :only [Requestable]]
-        [shafty.behaviour :only [behaviour]])
-  (:require [goog.events :as events]
-            [goog.net.XhrIo :as xhrio]))
+  (:use [shafty.behaviour-conversion  :only [BehaviourConversion]]
+        [shafty.event-stream          :only [EventStream merge!]]
+        [shafty.propagatable          :only [Propagatable propagate!
+                                             send! add-sink! SENTINEL
+                                             sentinel?]]
+        [shafty.observable            :only [Observable event! events!]]
+        [shafty.requestable           :only [Requestable]]
+        [shafty.behaviour             :only [behaviour]]
+        [shafty.priority-map          :only [priority-map]]
+        [clojure.browser.event        :only [listen]]
+        [clojure.browser.net          :only [xhr-connection transmit]]))
 
-(deftype Event [sinks sources watches]
-  IWatchable
-  (-notify-watches [this oldval newval]
-    (doseq [[key f] watches]
-      (f key this oldval newval)))
-  (-add-watch [this key f]
-    (set! (.-watches this) (assoc watches key f)))
-  (-remove-watch [this key]
-    (set! (.-watches this) (dissoc watches key))))
+(deftype Event [sources sinks rank update-fn])
 
 (defn event
   "Define an event, which is a time-varying value with finite
   occurences."
-  ([]
-   (let [e (Event. nil nil nil)]
-     (-add-watch e (gensym "watch") (fn [x y a b]
-                                      (propagate! e b))) e))
-  ([update-fn]
-   (let [e (Event. nil nil nil)]
-     (-add-watch e (gensym "watch") (partial update-fn e)) e)))
+  ([sources update-fn]
+   (let [max-source-rank  (apply max (map #(.-rank %1) sources))
+         rank             (inc (or max-source-rank 0))]
+     (Event. sources nil rank update-fn))))
 
 (extend-type Event
   BehaviourConversion
   (hold! [this initial]
     (let [b (behaviour initial this)]
-      (set! (.-sinks this) (conj (.-sinks this) b)) b)))
+      (set! (.-sinks this) (conj (.-sinks this) b)) b))
 
-(extend-type Event
   Propagatable
   (propagate! [this value]
-    (let [sinks (.-sinks this)]
-      (doall (map (fn [x] (send! x value)) sinks))))
+    (let [empty-queue   shafty.priority-map.PersistentPriorityMap/EMPTY
+          initial-value [{:node this :value value} (.-rank this)]
+          initial-queue (conj empty-queue initial-value)]
+      (loop [pq initial-queue]
+        (if (= 0 (count pq))
+          value
+          (let [[{:keys [node value]} _] (peek pq)
+                v                        (apply (.-update-fn node) [node value])]
+            (if (not (sentinel? v))
+              (recur (reduce conj (pop pq)
+                (map (fn [y] [{:node y :value v} (.-rank y)]) (.-sinks node))))
+              (recur (pop pq))))))))
 
   (send! [this value]
-    (-notify-watches this nil value)))
+    (propagate! this value))
 
-(extend-type Event
+  (add-sink! [this that]
+    (set! (.-sinks this) (conj (.-sinks this) that)) this)
+
   Requestable
   (requests! [this]
-    (let [e (event (fn [me x y a b]
-              (let [url (:url b)]
-                (xhrio/send url (fn [ev]
-                                  (propagate! me (.-target ev)))))))]
-      (set! (.-sinks this) (conj (.-sinks this) e))
-      (set! (.-sources e) (conj (.-sources e) this)) e)))
+    (let [xhr (xhr-connection)
+          e (event [this] (fn [me x]
+                            (let [url (:url x)]
+                              (transmit xhr url))))]
+      (add-sink! this e) e))
 
-(extend-type Event
   EventStream
   (filter! [this filter-fn]
-    (let [e (event (fn [me x y a b]
-                     (let [v (apply filter-fn [b])]
-                       (if (true? v) (propagate! me b)))))]
-      (set! (.-sinks this) (conj (.-sinks this) e))
-      (set! (.-sources e) (conj (.-sources e) this)) e))
+    (let [e (event [this] (fn [me x] (let [v (apply filter-fn [x])]
+                       (if (true? v) x SENTINEL))))]
+      (add-sink! this e) e))
 
   (merge! [this that]
-    (let [e (event)]
-      (set! (.-sinks this) (conj (.-sinks this) e))
-      (set! (.-sinks that) (conj (.-sinks that) e))
-      (set! (.-sources e) (conj (.-sources e) this))
-      (set! (.-sources e) (conj (.-sources e) that)) e))
+    (let [s (vector this that)
+          e (event s (fn [me x] x))]
+      (doall (map (fn [x] (add-sink! x e)) s)) e))
 
   (map! [this map-fn]
-    (let [e (event (fn [me x y a b]
-                       (propagate! me (apply map-fn [b]))))]
-      (set! (.-sinks this) (conj (.-sinks this) e))
-      (set! (.-sources e) (conj (.-sources e) this)) e))
+    (let [e (event [this] (fn [me x] (apply map-fn [x])))]
+      (add-sink! this e) e))
 
   (delay! [this interval]
-    (let [e (event (fn [me x y a b]
-                       (js/setTimeout (fn []
-                                        (propagate! me b)) interval)))]
-      (set! (.-sinks this) (conj (.-sinks this) e))
-      (set! (.-sources e) (conj (.-sources e) this)) e))
+    (let [t (fn [me x] (js/setTimeout (fn [x] (send! me x)) interval))
+          e (event [this] t)]
+      (add-sink! this e) e))
 
   (snapshot! [this that]
-    (let [e (event (fn [me x y a b] (propagate! me (deref that))))]
-      (set! (.-sinks this) (conj (.-sinks this) e))
-      (set! (.-sources e) (conj (.-sources e) this)) e)))
+    (let [e (event [this] (fn [me x] (deref that)))]
+      (add-sink! this e) e)))
 
 (extend-type js/HTMLElement
   Observable
   (event! [this event-type]
     (event! this event-type (fn [x] (identity x))))
+
   (event! [this event-type value-fn]
-    (let [e (event)]
-      (events/listen this event-type
-              (fn [ev] (send! e (apply value-fn [ev])))) e))
+    (let [e (event [] (fn [me x] x))]
+      (listen this event-type (fn [ev] (send! e (apply value-fn [ev])))) e))
+
   (events! [this event-types]
     (events! this event-types (fn [x] (identity x))))
+
   (events! [this event-types value-fn]
     (reduce (fn [acc x] (merge! acc x))
             (map (fn [event-type]

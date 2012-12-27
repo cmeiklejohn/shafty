@@ -8,50 +8,38 @@
 ;; this software.
 ;;
 (ns shafty.behaviour
-  (:use [shafty.event-conversion :only [EventConversion changes!]]
-        [shafty.behaviour-conversion :only [hold!]]
-        [shafty.event-stream :only [map! merge!]]
-        [shafty.propagatable :only [Propagatable propagate! send!]]
-        [shafty.renderable :only [Renderable insert!]]
-        [shafty.liftable :only [Liftable lift! lift2!]]
-        [shafty.observable :only [Observable events!]]))
+  (:use [shafty.event-conversion      :only [EventConversion changes!]]
+        [shafty.behaviour-conversion  :only [hold!]]
+        [shafty.event-stream          :only [map! merge!]]
+        [shafty.propagatable          :only [Propagatable propagate!
+                                             send! add-sink!]]
+        [shafty.renderable            :only [Renderable insert!
+                                             add-outlet!]]
+        [shafty.liftable              :only [Liftable lift! lift2!]]
+        [shafty.observable            :only [Observable events!]]))
 
-(deftype Behaviour [state stream watches]
+(deftype Behaviour [state stream update-fn outlets]
   IDeref
-  (-deref [_] state)
-
-  IWatchable
-  (-notify-watches [this oldval newval]
-    (doseq [[key f] watches]
-      (f key this oldval newval)))
-  (-add-watch [this key f]
-    (set! (.-watches this) (assoc watches key f)))
-  (-remove-watch [this key]
-    (set! (.-watches this) (dissoc watches key))))
+  (-deref [_] state))
 
 (defn behaviour
   "Define a behaviour, which is a time-varying value providing constant
   values."
   ([state stream]
-   (let [e (Behaviour. state stream nil)]
-     (-add-watch e (gensym "watch") (fn [x y a b]
-                                      (propagate! e (set! (.-state e) b))
-                                      )) e)))
+   (Behaviour. state stream (fn [me x] (propagate! me x)) nil)))
 
 (extend-type Behaviour
   EventConversion
-  (changes! [this] (.-stream this)))
+  (changes! [this] (.-stream this))
 
-(extend-type Behaviour
   Propagatable
   (propagate! [this value]
-    (let [sinks (.-sinks this)]
-      (doall (map (fn [x] (send! x value)) sinks))))
+    (let [value (set! (.-state this) value) outlets (.-outlets this)]
+      (doall (map (fn [x] (set! (.-innerHTML x) value)) outlets)) value))
 
   (send! [this value]
-    (-notify-watches this nil value)))
+    (propagate! this value))
 
-(extend-type Behaviour
   Liftable
   (lift! [this lift-fn]
     (-> (changes! this) (map! lift-fn) (hold! nil)))
@@ -60,15 +48,15 @@
   (lift2! [this that lift-fn initial]
     (-> (merge! (changes! this) (changes! that))
         (map! (fn [] (apply lift-fn [@this @that])))
-        (hold! initial))))
+        (hold! initial)))
 
-(extend-type Behaviour
   Renderable
   (insert! [this element]
-    (-add-watch this (gensym "watch") (fn [x y a b]
-                                     (set! (.-innerHTML element) b)))
-    (set! (.-innerHTML element) (deref this))
-    this))
+    (-> (add-outlet! this element)
+        (propagate! (deref this))) this)
+
+  (add-outlet! [this that]
+    (set! (.-outlets this) (conj (.-outlets this) that)) this))
 
 (extend-type js/HTMLElement
   Observable

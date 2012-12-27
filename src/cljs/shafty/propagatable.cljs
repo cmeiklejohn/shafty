@@ -14,4 +14,16 @@
   (propagate! [this value]
               "Propagate the value to all of the sinks.")
   (send! [this value]
-         "Notify object of a new value."))
+         "Notify object of a new value.")
+  (add-sink! [this that]
+             "Add a sink for propagation."))
+
+(declare SENTINEL)
+
+(deftype Sentinel [])
+
+(set! SENTINEL (Sentinel.))
+
+(defn sentinel? [x]
+  "Return true if provided value is the sentinel."
+  (= x SENTINEL))
