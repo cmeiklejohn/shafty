@@ -11,7 +11,8 @@
   (:use [shafty.behaviour-conversion  :only [BehaviourConversion]]
         [shafty.event-stream          :only [EventStream merge!]]
         [shafty.propagatable          :only [Propagatable propagate!
-                                             send! add-sink! SENTINEL]]
+                                             send! add-sink! SENTINEL
+                                             sentinel?]]
         [shafty.observable            :only [Observable event! events!]]
         [shafty.requestable           :only [Requestable]]
         [shafty.behaviour             :only [behaviour]]
@@ -37,17 +38,17 @@
 
   Propagatable
   (propagate! [this value]
-    (let [empty-queue   cljs.core.PersistentQueue/EMPTY
-          initial-value {:node this :value value}
+    (let [empty-queue   shafty.priority-map.PersistentPriorityMap/EMPTY
+          initial-value [{:node this :value value} (.-rank this)]
           initial-queue (conj empty-queue initial-value)]
       (loop [pq initial-queue]
         (if (= 0 (count pq))
           value
-          (let [{:keys [node value]} (peek pq)
-                v                    (apply (.-update-fn node) [node value])]
-            (if (not= SENTINEL v)
+          (let [[{:keys [node value]} _] (peek pq)
+                v                        (apply (.-update-fn node) [node value])]
+            (if (not (sentinel? v))
               (recur (reduce conj (pop pq)
-                (map (fn [y] {:node y :value v}) (.-sinks node))))
+                (map (fn [y] [{:node y :value v} (.-rank y)]) (.-sinks node))))
               (recur (pop pq))))))))
 
   (send! [this value]

@@ -23,3 +23,7 @@
 (deftype Sentinel [])
 
 (set! SENTINEL (Sentinel.))
+
+(defn sentinel? [x]
+  "Return true if provided value is the sentinel."
+  (= x SENTINEL))
