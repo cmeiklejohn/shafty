@@ -200,6 +200,13 @@
    (Behaviour. state stream (fn [me x] (propagate! me x)) nil)))
 
 (extend-type Behaviour
+  IDetachable
+  (detach! [this]
+    (set! (.-detached this) true))
+
+  (detached? [this]
+    (.-detached this))
+
   IEventConversion
   (changes! [this] (.-stream this))
 
