@@ -68,13 +68,18 @@
   (delay! [this interval])
   (snapshot! [this that]))
 
+(defprotocol IDetachable
+  "Allow events to be detached, which also prevents propagation"
+  (detach! [this])
+  (detached? [this]))
+
 ;;
 ;; Events
 ;;
 
 (declare behaviour sentinel?)
 
-(deftype Event [sources sinks rank update-fn])
+(deftype Event [sources sinks rank update-fn detached])
 
 (defn event
   "Define an event, which is a time-varying value with finite
@@ -82,9 +87,15 @@
   ([sources update-fn]
    (let [max-source-rank (apply max (map #(.-rank %1) sources))
          rank            (inc (or max-source-rank 0))]
-     (Event. sources nil rank update-fn))))
+     (Event. sources nil rank update-fn false))))
 
 (extend-type Event
+  IDetachable
+  (detach! [this]
+    (set! (.-detached this) true))
+  (detached? [this]
+    (.-detached this))
+
   IBehaviourConversion
   (hold! [this initial]
     (let [b (behaviour initial this)]
@@ -100,7 +111,7 @@
           value
           (let [[{:keys [node value]} _] (peek pq)
                 v (apply (.-update-fn node) [node value])]
-            (if (not (sentinel? v))
+            (if (and (not (sentinel? v)) (not (detached? node)))
               (recur (reduce conj (pop pq)
                 (map (fn [y] [{:node y :value v} (.-rank y)]) (.-sinks node))))
               (recur (pop pq))))))))
