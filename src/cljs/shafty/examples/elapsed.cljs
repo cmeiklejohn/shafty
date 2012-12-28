@@ -19,14 +19,9 @@
 ;; insertValueB(elapsedB, "curTime", "innerHTML");
 ;;
 (ns shafty.examples.elapsed
-  (:use [shafty.event-stream          :only [merge! map! snapshot!]]
-        [shafty.behaviour-conversion  :only [hold!]]
-        [shafty.observable            :only [event!]]
-        [shafty.requestable           :only [requests!]]
-        [shafty.renderable            :only [insert!]]
-        [shafty.liftable              :only [lift! lift2!]]
-        [shafty.timer                 :only [timer!]]
-        [clojure.browser.dom          :only [get-element]]))
+  (:use [shafty.core :only [merge! map! snapshot! hold! event! requests!
+                            insert! lift! lift2! timer!]]
+        [clojure.browser.dom :only [get-element]]))
 
 (defn- timer []
   "Generate a timer, and convert the timer into a behaviour."

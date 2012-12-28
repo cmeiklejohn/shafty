@@ -8,11 +8,8 @@
 ;; this software.
 ;;
 (ns test.integration.integration
-  (:use [shafty.liftable :only [lift!]]
-        [shafty.event :only [event]]
-        [shafty.event-stream :only [merge! map! filter!]]
-        [shafty.propagatable :only [propagate! send!]]
-        [shafty.behaviour-conversion :only [hold!]]))
+  (:use [shafty.core :only [lift! event merge! map! filter! propagate!
+                            send! hold!]]))
 
 (.log js/console "Starting Tests")
 
