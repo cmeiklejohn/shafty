@@ -12,12 +12,9 @@
 ;; Example similar to the example in Section 2.3 of the Flapjax paper.
 ;;
 (ns shafty.examples.autosave
-  (:use [shafty.event-stream  :only [merge! map! snapshot!]]
-        [shafty.observable    :only [event! behaviour!]]
-        [shafty.requestable   :only [requests!]]
-        [shafty.renderable    :only [insert!]]
-        [shafty.timer         :only [timer!]]
-        [clojure.browser.dom  :only [get-element]]))
+  (:use [shafty.core :only [merge! map! snapshot! event! behaviour!
+                            requests! insert! timer!]]
+        [clojure.browser.dom :only [get-element]]))
 
 (defn- build-request [value]
   "Generate a request object."
