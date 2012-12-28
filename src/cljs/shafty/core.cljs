@@ -93,6 +93,7 @@
   IDetachable
   (detach! [this]
     (set! (.-detached this) true))
+
   (detached? [this]
     (.-detached this))
 
