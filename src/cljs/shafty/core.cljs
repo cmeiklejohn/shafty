@@ -69,25 +69,10 @@
   (snapshot! [this that]))
 
 ;;
-;; Propagation Sentinels
-;;
-
-(declare SENTINEL)
-
-(deftype Sentinel [])
-
-(set! SENTINEL (Sentinel.))
-
-(defn- sentinel?
-  "Return true if provided value is the sentinel."
-  [x]
-  (= x SENTINEL))
-
-;;
 ;; Events
 ;;
 
-(declare behaviour)
+(declare behaviour sentinel?)
 
 (deftype Event [sources sinks rank update-fn])
 
@@ -137,7 +122,7 @@
   IEventStream
   (filter! [this filter-fn]
     (let [e (event [this] (fn [me x] (let [v (apply filter-fn [x])]
-                       (if (true? v) x SENTINEL))))]
+                       (if (true? v) x shafty.core.Event/SENTINEL))))]
       (add-sink! this e) e))
 
   (merge! [this that]
@@ -174,6 +159,19 @@
     (reduce (fn [acc x] (merge! acc x))
             (map (fn [event-type]
                    (event! this event-type value-fn)) event-types))))
+
+;;
+;; Propagation Sentinels
+;;
+
+(deftype Sentinel [])
+
+(set! shafty.core.Event/SENTINEL (Sentinel.))
+
+(defn- sentinel?
+  "Return true if provided value is the sentinel."
+  [x]
+  (= x shafty.core.Event/SENTINEL))
 
 ;;
 ;; Behaviours
