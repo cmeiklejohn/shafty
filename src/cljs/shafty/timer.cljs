@@ -8,7 +8,7 @@
 ;; this software.
 ;;
 (ns shafty.timer
-  (:use [shafty.event :only [event]]
+  (:use [shafty.event        :only [event]]
         [shafty.propagatable :only [send!]]))
 
 (defn timer!
@@ -17,6 +17,5 @@
   ([interval]
    (timer! interval js/Date))
   ([interval value-fn]
-   (let [e (event)]
-     (js/setInterval (fn []
-                       (send! e (value-fn))) interval) e)))
+   (let [e (event nil (fn [me x] x))]
+     (js/setInterval (fn [] (send! e (value-fn))) interval) e)))

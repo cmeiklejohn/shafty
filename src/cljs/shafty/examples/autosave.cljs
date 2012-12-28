@@ -12,12 +12,12 @@
 ;; Example similar to the example in Section 2.3 of the Flapjax paper.
 ;;
 (ns shafty.examples.autosave
-  (:use [shafty.event-stream :only [merge! map! snapshot!]]
-        [shafty.observable :only [event! behaviour!]]
-        [shafty.requestable :only [requests!]]
-        [shafty.renderable :only [insert!]]
-        [shafty.timer :only [timer!]])
-  (:require [goog.dom :as dom]))
+  (:use [shafty.event-stream  :only [merge! map! snapshot!]]
+        [shafty.observable    :only [event! behaviour!]]
+        [shafty.requestable   :only [requests!]]
+        [shafty.renderable    :only [insert!]]
+        [shafty.timer         :only [timer!]]
+        [clojure.browser.dom  :only [get-element]]))
 
 (defn- build-request [value]
   "Generate a request object."
@@ -25,7 +25,7 @@
 
 (defn- live-content []
   "Generate a behaviour for the live content area."
-  (behaviour! (dom/getElement "live-content") nil))
+  (behaviour! (get-element "live-content") nil))
 
 (defn- timer []
   "Generate a timer."
@@ -34,12 +34,10 @@
 
 (defn main []
   "Run the autosave example."
-
-  (-> (event! (dom/getElement "save-button") "click")
+  (-> (event! (get-element "save-button") "click")
       (map! (fn [x] (.log js/console "Button clicked.") x))
       (merge! (timer))
       (snapshot! (live-content))
       (map! build-request)
       (requests!))
-
   (.log js/console "Starting the autosave example."))
