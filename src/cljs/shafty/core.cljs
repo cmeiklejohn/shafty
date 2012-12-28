@@ -8,8 +8,8 @@
 ;; this software.
 ;;
 (ns shafty.core
-  (:use [clojure.browser.event  :only [listen]]
-        [clojure.browser.net    :only [xhr-connection transmit]]))
+  (:use [clojure.browser.event :only [listen]]
+        [clojure.browser.net   :only [xhr-connection transmit]]))
 
 ;;
 ;; Protocols
@@ -95,8 +95,8 @@
   "Define an event, which is a time-varying value with finite
   occurences."
   ([sources update-fn]
-   (let [max-source-rank  (apply max (map #(.-rank %1) sources))
-         rank             (inc (or max-source-rank 0))]
+   (let [max-source-rank (apply max (map #(.-rank %1) sources))
+         rank            (inc (or max-source-rank 0))]
      (Event. sources nil rank update-fn))))
 
 (extend-type Event
@@ -277,7 +277,7 @@
 
   ISeqable
   (-seq [coll]
-    (seq (for [[priority item-set] 
+    (seq (for [[priority item-set]
       priority->set-of-items, item item-set]
         (vector item priority))))
 
