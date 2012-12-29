@@ -29,7 +29,7 @@ particular DOM element, such as an input field.
 
 As Shafty is heavily inspired by Flapjax, provided below is an API reference outlining which parts of the Flapjax API have been implemented and what the equivalent function name is in Shafty.  Some of the functions have similar mappings leveraging Clojure's protocols.
 
-The functions below appear in the order of the appearance of each in the Flapjax implementation.
+The combinators below appear in the order of the appearance of each in the Flapjax implementation.
 
 F.Event         | shafty.core.Event | F.Behavior   | shafty.core.Behaviour
 --------------- | ----------------- | ------------ | ---------------------
