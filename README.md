@@ -37,7 +37,7 @@ The functions below appear in the order of the appearance of each in the Flapjax
 <tr><td>mergeE</td><td>merge!</td></tr>
 <tr><td>constantE</td><td></td></tr>
 <tr><td>bindE</td><td></td></tr>
-<tr><td>mapE</td><td></td></tr>
+<tr><td>mapE</td><td>map!</td></tr>
 <tr><td>notE</td><td></td></tr>
 <tr><td>filterE</td><td>filter!</td></tr>
 <tr><td>onceE</td><td></td></tr>
