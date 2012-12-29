@@ -102,22 +102,25 @@
       (set! (.-sinks this) (conj (.-sinks this) b)) b))
 
   IPropagatable
-  (propagate! [this value]
+  (propagate! [this initial-pulse]
     (let [empty-queue   shafty.core.PersistentPriorityMap/EMPTY
-          initial-value [{:node this :value value} (.-rank this)]
+          initial-value [{:node this :pulse initial-pulse} (.-rank this)]
           initial-queue (conj empty-queue initial-value)]
       (loop [pq initial-queue]
         (if (= 0 (count pq))
-          value
-          (let [[{:keys [node value]} _] (peek pq)
-                v (apply (.-update-fn node) [node value])]
-            (if (not (sentinel? v))
+          initial-pulse
+          (let [[item _]   (peek pq)
+                node       (:node item)
+                value      ((.-update-fn node) node (:pulse item))
+                next-pulse (pulse value)]
+            (if (not (sentinel? next-pulse))
               (recur (reduce conj (pop pq)
-                (map (fn [y] [{:node y :value v} (.-rank y)]) (.-sinks node))))
+                (map (fn [y] [{:node y :pulse next-pulse} (.-rank y)])
+                  (.-sinks node))))
               (recur (pop pq))))))))
 
   (send! [this value]
-    (propagate! this value))
+    (propagate! this (pulse value)))
 
   (add-sink! [this that]
     (set! (.-sinks this) (conj (.-sinks this) that)) this)
@@ -132,21 +135,21 @@
 
   IEventStream
   (filter! [this filter-fn]
-    (let [e (event [this] (fn [me x] (let [v (apply filter-fn [x])]
-                       (if (true? v) x shafty.core.Event/SENTINEL))))]
+    (let [e (event [this] (fn [me x] (let [v (apply filter-fn [(.-value x)])]
+                       (if (true? v) (.-value x) shafty.core.Event/SENTINEL))))]
       (add-sink! this e) e))
 
   (merge! [this that]
     (let [s (vector this that)
-          e (event s (fn [me x] x))]
+          e (event s (fn [me x] (.-value x)))]
       (doall (map (fn [x] (add-sink! x e)) s)) e))
 
   (map! [this map-fn]
-    (let [e (event [this] (fn [me x] (apply map-fn [x])))]
+    (let [e (event [this] (fn [me x] (apply map-fn [(.-value x)])))]
       (add-sink! this e) e))
 
   (delay! [this interval]
-    (let [t (fn [me x] (js/setTimeout (fn [x] (send! me x)) interval))
+    (let [t (fn [me x] (js/setTimeout (fn [x] (send! me (.-value x))) interval))
           e (event [this] t)]
       (add-sink! this e) e))
 
@@ -180,9 +183,9 @@
 (set! shafty.core.Event/SENTINEL (Sentinel.))
 
 (defn- sentinel?
-  "Return true if provided value is the sentinel."
+  "Return true if provided pulse is a sentinel."
   [x]
-  (= x shafty.core.Event/SENTINEL))
+  (= (.-value x) shafty.core.Event/SENTINEL))
 
 ;;
 ;; Behaviours
@@ -203,12 +206,14 @@
   (changes! [this] (.-stream this))
 
   IPropagatable
-  (propagate! [this value]
-    (let [value (set! (.-state this) value) outlets (.-outlets this)]
-      (doall (map (fn [x] (set! (.-innerHTML x) value)) outlets)) value))
+  (propagate! [this pulse]
+    (let [value   (set! (.-state this) (.-value pulse))
+          outlets (.-outlets this)]
+      (doall
+        (map (fn [x] (set! (.-innerHTML x) value)) outlets)) value))
 
   (send! [this value]
-    (propagate! this value))
+    (propagate! this (pulse value)))
 
   ILiftable
   (lift! [this lift-fn]
@@ -239,7 +244,9 @@
 ;; Priority Map
 ;;
 
-(deftype PersistentPriorityMap [priority->set-of-items item->priority _meta]
+(deftype PersistentPriorityMap [priority->set-of-items
+                                item->priority
+                                _meta]
   IWithMeta
   (-with-meta [coll meta] (PersistentPriorityMap. (sorted-map) {} {}))
 
@@ -375,5 +382,5 @@
   ([interval]
    (timer! interval (js/Date.)))
   ([interval value-fn]
-   (let [e (event nil (fn [me x] x))]
+   (let [e (event nil (fn [me x] (.-value x)))]
      (js/setInterval (fn [] (send! e (value-fn))) interval) e)))
