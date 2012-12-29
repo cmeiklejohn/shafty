@@ -135,8 +135,11 @@
 
   IEventStream
   (filter! [this filter-fn]
-    (let [e (event [this] (fn [me x] (let [v (apply filter-fn [(.-value x)])]
-                       (if (true? v) (.-value x) shafty.core.Event/SENTINEL))))]
+    (let [e (event [this] (fn [me x]
+                            (let [v (apply filter-fn [(.-value x)])]
+                              (if (true? v)
+                                (.-value x)
+                                shafty.core.Event/SENTINEL))))]
       (add-sink! this e) e))
 
   (merge! [this that]
@@ -149,7 +152,8 @@
       (add-sink! this e) e))
 
   (delay! [this interval]
-    (let [t (fn [me x] (js/setTimeout (fn [x] (send! me (.-value x))) interval))
+    (let [t (fn [me x] (js/setTimeout
+                         (fn [x] (send! me (.-value x))) interval))
           e (event [this] t)]
       (add-sink! this e) e))
 
@@ -164,7 +168,8 @@
 
   (event! [this event-type value-fn]
     (let [e (event [] (fn [me x] x))]
-      (listen this event-type (fn [ev] (send! e (apply value-fn [ev])))) e))
+      (listen this event-type (fn [ev]
+                                (send! e (apply value-fn [ev])))) e))
 
   (events! [this event-types]
     (events! this event-types (fn [x] (identity x))))
