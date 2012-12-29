@@ -37,7 +37,7 @@ sendEvent       | send!             | startsWith   |
 mergeE          | merge!            | valueNow     |
 constantE       |                   | changes      |
 bindE           |                   | switchB      |
-mapE            | map!              | timerB       |
+mapE            | map!              | timerB       | held-timer!
 notE            |                   | delayB       |
 filterE         | filter!           | sendBehavior |
 onceE           |                   | liftB
@@ -49,6 +49,7 @@ snapshotE       | snapshot!
 filterRepeatsE  |
 calmE           |
 blindE          |
+timerE          | timer!
 
 ## TODO
 
