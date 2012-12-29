@@ -31,7 +31,7 @@ As Shafty is heavily inspired by Flapjax, provided below is an API reference out
 
 The functions below appear in the order of the appearance of each in the Flapjax implementation.
 
-<table>
+<table style="display: inline-block;">
 <tr><th>F.Event</th><th>shafty.core/event</th></tr>
 <tr><td>sendEvent</td><td>send!</td></tr>
 <tr><td>mergeE</td><td>merge!</td></tr>
@@ -51,7 +51,7 @@ The functions below appear in the order of the appearance of each in the Flapjax
 <tr><td>blindE</td><td></td></tr>
 </table>
 
-<table>
+<table style="display: inline-block;">
 <tr><th>F.Behavior</th><th>shafty.core/behaviour</th></tr>
 <tr><td>startsWith</td><td></td></tr>
 <tr><td>valueNow</td><td></td></tr>
@@ -64,6 +64,11 @@ The functions below appear in the order of the appearance of each in the Flapjax
 <tr><td>notB</td><td></td></tr>
 <tr><td>blindB</td><td></td></tr>
 <tr><td>calmB</td><td></td></tr>
+<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
 </table>
 
 ## TODO
