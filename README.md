@@ -66,6 +66,14 @@ The functions below appear in the order of the appearance of each in the Flapjax
 <tr><td>calmB</td><td></td></tr>
 </table>
 
+## TODO
+
+* Add pulses.
+* Do not relift on same pulse.
+* Creation of behaviour generates a new event which updates it's behaviour.
+* Remove outlets.
+* Add rest of TODOs from notes.
+
 ## References
 
 * Elliott, [_Push-Pull Functional Reactive Programming_](http://dl.acm.org/citation.cfm?id=1596643)
