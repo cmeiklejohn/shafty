@@ -69,6 +69,17 @@
   (snapshot! [this that]))
 
 ;;
+;; Pulses
+;;
+
+(deftype Pulse [value timestamp])
+
+(defn pulse
+  "Generate a pulse for a particular value."
+  [value]
+  (Pulse. value (.getTime (js/Date.))))
+
+;;
 ;; Events
 ;;
 
