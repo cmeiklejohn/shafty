@@ -62,10 +62,11 @@
   "The composable stream interface provides a series of filtering and
   selection methods for working with objects as they enter and leave the
   event stream."
-  (filter! [this filter-fn])
+  (not! [this])
   (map! [this map-fn])
-  (merge! [this that])
   (delay! [this interval])
+  (merge! [this that])
+  (filter! [this filter-fn])
   (snapshot! [this that]))
 
 ;;
@@ -134,6 +135,9 @@
       (add-sink! this e) e))
 
   IEventStream
+  (not! [this]
+    (map! this (fn [x] (not x))))
+
   (filter! [this filter-fn]
     (let [e (event [this] (fn [me x]
                             (let [v (apply filter-fn [(.-value x)])]

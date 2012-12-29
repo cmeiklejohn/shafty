@@ -38,7 +38,7 @@ mergeE          | merge!            | valueNow     |
 constantE       |                   | changes      |
 bindE           |                   | switchB      |
 mapE            | map!              | timerB       | held-timer!
-notE            |                   | delayB       |
+notE            | not!              | delayB       |
 filterE         | filter!           | sendBehavior |
 onceE           |                   | liftB
 skipFirstE      |                   | notB
