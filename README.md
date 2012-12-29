@@ -31,49 +31,27 @@ As Shafty is heavily inspired by Flapjax, provided below is an API reference out
 
 The functions below appear in the order of the appearance of each in the Flapjax implementation.
 
-<table style="display: inline-block;">
-<tr><th>F.Event</th><th>shafty.core/event</th></tr>
-<tr><td>sendEvent</td><td>send!</td></tr>
-<tr><td>mergeE</td><td>merge!</td></tr>
-<tr><td>constantE</td><td></td></tr>
-<tr><td>bindE</td><td></td></tr>
-<tr><td>mapE</td><td>map!</td></tr>
-<tr><td>notE</td><td></td></tr>
-<tr><td>filterE</td><td>filter!</td></tr>
-<tr><td>onceE</td><td></td></tr>
-<tr><td>skipFirstE</td><td></td></tr>
-<tr><td>collectE</td><td></td></tr>
-<tr><td>switchE</td><td></td></tr>
-<tr><td>delayE</td><td>delay!</td></tr>
-<tr><td>snapshotE</td><td>snapshot!</td></tr>
-<tr><td>filterRepeatsE</td><td></td></tr>
-<tr><td>calmE</td><td></td></tr>
-<tr><td>blindE</td><td></td></tr>
-</table>
-
-<table style="display: inline-block;">
-<tr><th>F.Behavior</th><th>shafty.core/behaviour</th></tr>
-<tr><td>startsWith</td><td></td></tr>
-<tr><td>valueNow</td><td></td></tr>
-<tr><td>changes</td><td></td></tr>
-<tr><td>switchB</td><td></td></tr>
-<tr><td>timerB</td><td></td></tr>
-<tr><td>delayB</td><td></td></tr>
-<tr><td>sendBehavior</td><td></td></tr>
-<tr><td>liftB</td><td></td></tr>
-<tr><td>notB</td><td></td></tr>
-<tr><td>blindB</td><td></td></tr>
-<tr><td>calmB</td><td></td></tr>
-<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
-</table>
+F.Event         | shafty.core.Event | F.Behavior   | shafty.core.Behaviour
+--------------- | ----------------- | ------------ | ---------------------
+sendEvent       | send!             | startsWith   | 
+mergeE          | merge!            | valueNow     |
+constantE       |                   | changes      |
+bindE           |                   | switchB      |
+mapE            | map!              | timerB       |
+notE            |                   | delayB       |
+filterE         | filter!           | sendBehavior |
+onceE           |                   | liftB
+skipFirstE      |                   | notB
+collectE        |                   | blindB
+switchE         |                   | calmB
+delayE          | delay!
+snapshotE       | snapshot!
+filterRepeatsE  |
+calmE           |
+blindE          |
 
 ## TODO
 
-* Add pulses.
 * Do not relift on same pulse.
 * Creation of behaviour generates a new event which updates it's behaviour.
 * Remove outlets.
