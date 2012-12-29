@@ -18,9 +18,9 @@
 (defprotocol IPropagatable
   "Provides a mechanism for propagating events and values through the
   graph."
-  (propagate! [this value])
   (send! [this value])
-  (add-sink! [this that]))
+  (add-sink! [this that])
+  (propagate! [this value]))
 
 (defprotocol IRenderable
   "Renders content into the DOM from streams."
