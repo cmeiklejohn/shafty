@@ -373,7 +373,7 @@
   "Generate a new timer at a given interval, and bind to a new event
   stream."
   ([interval]
-   (timer! interval js/Date))
+   (timer! interval (js/Date.)))
   ([interval value-fn]
    (let [e (event nil (fn [me x] x))]
      (js/setInterval (fn [] (send! e (value-fn))) interval) e)))
