@@ -60,6 +60,7 @@ timerE          | timer!
 * Replace set! calls if possible to add better clj compatibility.
 * Look into possibility of persistent events or behaviours.
 * Should update-fn return pulse explicitly or implicitly?
+* Extract priority-map.
 
 ## References
 
