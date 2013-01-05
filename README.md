@@ -62,6 +62,7 @@ timerE          | timer!
 * Should update-fn return pulse explicitly or implicitly?
 * Extract priority-map.
 * Revisit listeners.
+* When sink is removed/added; recompute dependency tree.
 
 ## References
 
