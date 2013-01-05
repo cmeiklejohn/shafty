@@ -54,9 +54,11 @@ timerE          | timer!
 ## TODO
 
 * Do not relift on same pulse.
-* Creation of behaviour generates a new event which updates it's behaviour.
+* Creation of behaviour generates a new event which updates behaviour.
 * Remove outlets.
 * Add rest of TODOs from notes.
+* Replace set! calls if possible to add better clj compatibility.
+* Look into possibility of persistent events or behaviours.
 
 ## References
 
