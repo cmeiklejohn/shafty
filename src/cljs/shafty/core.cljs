@@ -20,6 +20,7 @@
   graph."
   (send! [this value])
   (add-sink! [this that])
+  (remove-sink! [this that])
   (propagate! [this value]))
 
 (defprotocol IRenderable
@@ -129,7 +130,12 @@
     (propagate! this (pulse value)))
 
   (add-sink! [this that]
-    (set! (.-sinks this) (conj (.-sinks this) that)) this)
+    (set! (.-sinks this) (conj (.-sinks this) that))
+    this)
+
+  (remove-sink! [this that]
+    (set! (.-sinks this) (vec (filter (fn [x] (= x that)) (.-sinks this))))
+    this)
 
   IRequestable
   (requests! [this]
