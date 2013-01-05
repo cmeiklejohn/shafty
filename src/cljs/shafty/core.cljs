@@ -67,7 +67,8 @@
   (delay! [this interval])
   (merge! [this that])
   (filter! [this filter-fn])
-  (snapshot! [this that]))
+  (snapshot! [this that])
+  (constant! [this value]))
 
 ;;
 ;; Pulses
@@ -138,19 +139,6 @@
   (not! [this]
     (map! this (fn [x] (not x))))
 
-  (filter! [this filter-fn]
-    (let [e (event [this] (fn [me x]
-                            (let [v (apply filter-fn [(.-value x)])]
-                              (if (true? v)
-                                (.-value x)
-                                shafty.core.Event/SENTINEL))))]
-      (add-sink! this e) e))
-
-  (merge! [this that]
-    (let [s (vector this that)
-          e (event s (fn [me x] (.-value x)))]
-      (doall (map (fn [x] (add-sink! x e)) s)) e))
-
   (map! [this map-fn]
     (let [e (event [this] (fn [me x] (apply map-fn [(.-value x)])))]
       (add-sink! this e) e))
@@ -161,9 +149,25 @@
           e (event [this] t)]
       (add-sink! this e) e))
 
+  (merge! [this that]
+    (let [s (vector this that)
+          e (event s (fn [me x] (.-value x)))]
+      (doall (map (fn [x] (add-sink! x e)) s)) e))
+
+  (filter! [this filter-fn]
+    (let [e (event [this] (fn [me x]
+                            (let [v (apply filter-fn [(.-value x)])]
+                              (if (true? v)
+                                (.-value x)
+                                shafty.core.Event/SENTINEL))))]
+      (add-sink! this e) e))
+
   (snapshot! [this that]
     (let [e (event [this] (fn [me x] (deref that)))]
-      (add-sink! this e) e)))
+      (add-sink! this e) e))
+
+  (constant! [this value]
+    (map! this (fn [x] value))))
 
 (extend-type js/HTMLElement
   IObservable

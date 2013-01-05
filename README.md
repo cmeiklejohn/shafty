@@ -33,9 +33,9 @@ The combinators below appear in the order of the appearance of each in the Flapj
 
 F.Event         | shafty.core.Event | F.Behavior   | shafty.core.Behaviour
 --------------- | ----------------- | ------------ | ---------------------
-sendEvent       | send!             | startsWith   | 
+sendEvent       | send!             | startsWith   |
 mergeE          | merge!            | valueNow     |
-constantE       |                   | changes      |
+constantE       | constant!         | changes      |
 bindE           |                   | switchB      |
 mapE            | map!              | timerB       | held-timer!
 notE            | not!              | delayB       |
