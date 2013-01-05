@@ -36,7 +36,7 @@ F.Event         | shafty.core.Event | F.Behavior   | shafty.core.Behaviour
 sendEvent       | send!             | startsWith   |
 mergeE          | merge!            | valueNow     |
 constantE       | constant!         | changes      |
-bindE           |                   | switchB      |
+bindE           | bind!             | switchB      |
 mapE            | map!              | timerB       | held-timer!
 notE            | not!              | delayB       |
 filterE         | filter!           | sendBehavior |

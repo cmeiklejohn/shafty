@@ -65,6 +65,7 @@
   event stream."
   (not! [this])
   (map! [this map-fn])
+  (bind! [this value-fn])
   (once! [this])
   (delay! [this interval])
   (merge! [this that])
@@ -152,6 +153,16 @@
   (map! [this map-fn]
     (let [e (event [this] (fn [me x] (apply map-fn [(.-value x)])))]
       (add-sink! this e) e))
+
+  (bind! [this value-fn]
+    (let [prev  (atom false)
+          out   (event [] (fn [me x] x))
+          in    (event [this] (fn [me x]
+                                (remove-sink! prev out)
+                                (swap! prev (value-fn x))
+                                (add-sink! prev out)
+                                shafty.core.Event/SENTINEL))]
+      out))
 
   (once! [this]
     (let [done (atom false)]
