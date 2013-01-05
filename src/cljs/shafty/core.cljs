@@ -70,7 +70,8 @@
   (filter! [this filter-fn])
   (collect! [this init combine-fn])
   (snapshot! [this that])
-  (constant! [this value]))
+  (constant! [this value])
+  (skip-first! [this]))
 
 ;;
 ;; Pulses
@@ -180,7 +181,14 @@
       (add-sink! this e) e))
 
   (constant! [this value]
-    (map! this (fn [x] value))))
+    (map! this (fn [x] value)))
+
+  (skip-first! [this]
+    (let [skipped (atom false)]
+      (filter! this (fn [x]
+                      (if (false? @skipped)
+                          (swap! skipped (fn [] true)) false
+                          true))))))
 
 (extend-type js/HTMLElement
   IObservable
