@@ -158,9 +158,9 @@
     (let [prev  (atom false)
           out   (event [] (fn [me x] x))
           in    (event [this] (fn [me x]
-                                (remove-sink! prev out)
-                                (swap! prev (value-fn x))
-                                (add-sink! prev out)
+                                (if (= (.instanceOf @prev) Event)
+                                  (remove-sink! @prev out))
+                                (swap! prev (add-sink! (value-fn x) out))
                                 shafty.core.Event/SENTINEL))]
       out))
 
