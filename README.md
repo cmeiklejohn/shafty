@@ -40,10 +40,10 @@ bindE           |                   | switchB      |
 mapE            | map!              | timerB       | held-timer!
 notE            | not!              | delayB       |
 filterE         | filter!           | sendBehavior |
-onceE           | once!             | liftB
-skipFirstE      | skip-first!       | notB
-collectE        | collect!          | blindB
-switchE         |                   | calmB
+onceE           | once!             | liftB        |
+skipFirstE      | skip-first!       | notB         |
+collectE        | collect!          | blindB       |
+switchE         |                   | calmB        |
 delayE          | delay!
 snapshotE       | snapshot!
 filterRepeatsE  | filter-repeats!
