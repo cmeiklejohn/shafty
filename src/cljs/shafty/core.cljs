@@ -68,6 +68,7 @@
   (delay! [this interval])
   (merge! [this that])
   (filter! [this filter-fn])
+  (collect! [this init combine-fn])
   (snapshot! [this that])
   (constant! [this value]))
 
@@ -169,6 +170,10 @@
                                 (.-value x)
                                 shafty.core.Event/SENTINEL))))]
       (add-sink! this e) e))
+
+  (collect! [this init combine-fn]
+    (let [acc (atom init)]
+      (map! this (fn [x] (swap! acc (fn [] (combine-fn x @acc)))))))
 
   (snapshot! [this that]
     (let [e (event [this] (fn [me x] (deref that)))]
