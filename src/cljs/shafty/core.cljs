@@ -71,7 +71,8 @@
   (collect! [this init combine-fn])
   (snapshot! [this that])
   (constant! [this value])
-  (skip-first! [this]))
+  (skip-first! [this])
+  (filter-repeats! [this initial]))
 
 ;;
 ;; Pulses
@@ -150,8 +151,8 @@
     (let [done (atom false)]
       (filter! this (fn [x]
                       (if (false? @done)
-                          (swap! done (fn [] true))
-                          false)))))
+                        (swap! done (fn [] true))
+                        false)))))
 
   (delay! [this interval]
     (let [t (fn [me x] (js/setTimeout
@@ -187,8 +188,15 @@
     (let [skipped (atom false)]
       (filter! this (fn [x]
                       (if (false? @skipped)
-                          (swap! skipped (fn [] true)) false
-                          true))))))
+                        (swap! skipped (fn [] true)) false
+                        true)))))
+
+  (filter-repeats! [this initial]
+    (let [prev (atom initial)]
+      (filter! this (fn [x]
+                      (if (not (= @prev x))
+                        (swap! prev (fn [] x)) true
+                        false))))))
 
 (extend-type js/HTMLElement
   IObservable
