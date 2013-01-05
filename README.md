@@ -61,6 +61,7 @@ timerE          | timer!
 * Look into possibility of persistent events or behaviours.
 * Should update-fn return pulse explicitly or implicitly?
 * Extract priority-map.
+* Revisit listeners.
 
 ## References
 
