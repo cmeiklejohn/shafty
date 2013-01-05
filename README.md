@@ -59,6 +59,7 @@ timerE          | timer!
 * Add rest of TODOs from notes.
 * Replace set! calls if possible to add better clj compatibility.
 * Look into possibility of persistent events or behaviours.
+* Should update-fn return pulse explicitly or implicitly?
 
 ## References
 
