@@ -30,7 +30,7 @@
       <section>
         <h1>shafty</h1>
 
-<p>ClojureScript functional reactive programming library.</p>
+<p>ClojureScript functional reactive programming library inspired by <a href="http://www.flapjax-lang.com/">Flapjax</a>.  Shafty provides the core abstractions provided by Flapjax for dataflow programming with reactive values, however does not provide the DOM manipulation abstractions provided by Flapjax.  </p>
 
 <h2>Disclaimer</h2>
 
@@ -38,7 +38,11 @@
 
 <p>Get in touch if you are interested in helping out.</p>
 
-<h2>Usage</h2>
+<h2>Motivation</h2>
+
+<p>Shafty aims to bring a native implementation of composable behaviours and event streams to ClojureScript as a micro-library which can be used to build larger reactive applications.  The long-term goal is to provide a Clojure implementation which can be used in both server-side and client-side applications.</p>
+
+<h2>Concepts</h2>
 
 <h3>Events</h3>
 
@@ -51,28 +55,134 @@ occurences over time.</p>
 Derive a behaviour from an event, or generate a receiver to watch a
 particular DOM element, such as an input field.</p>
 
-<h2>Incomplete</h2>
+<h2>API Reference</h2>
+
+<p>As Shafty is heavily inspired by Flapjax, provided below is an API reference outlining which parts of the Flapjax API have been implemented and what the equivalent function name is in Shafty.  Some of the functions have similar mappings leveraging Clojure's protocols.</p>
+
+<p>The combinators below appear in the order of the appearance of each in the Flapjax implementation.</p>
+
+<table>
+<tr>
+<th>F.Event</th>
+<th>shafty.core.Event</th>
+<th>F.Behavior</th>
+<th>shafty.core.Behaviour</th>
+</tr>
+<tr>
+<td>sendEvent</td>
+<td>send!</td>
+<td>startsWith</td>
+<td></td>
+</tr>
+<tr>
+<td>mergeE</td>
+<td>merge!</td>
+<td>valueNow</td>
+<td></td>
+</tr>
+<tr>
+<td>constantE</td>
+<td>constant!</td>
+<td>changes</td>
+<td></td>
+</tr>
+<tr>
+<td>bindE</td>
+<td>bind!</td>
+<td>switchB</td>
+<td></td>
+</tr>
+<tr>
+<td>mapE</td>
+<td>map!</td>
+<td>timerB</td>
+<td>held-timer!</td>
+</tr>
+<tr>
+<td>notE</td>
+<td>not!</td>
+<td>delayB</td>
+<td></td>
+</tr>
+<tr>
+<td>filterE</td>
+<td>filter!</td>
+<td>sendBehavior</td>
+<td></td>
+</tr>
+<tr>
+<td>onceE</td>
+<td>once!</td>
+<td>liftB</td>
+<td></td>
+</tr>
+<tr>
+<td>skipFirstE</td>
+<td>skip-first!</td>
+<td>notB</td>
+<td></td>
+</tr>
+<tr>
+<td>collectE</td>
+<td>collect!</td>
+<td>blindB</td>
+<td></td>
+</tr>
+<tr>
+<td>switchE</td>
+<td></td>
+<td>calmB</td>
+<td></td>
+</tr>
+<tr>
+<td>delayE</td>
+<td>delay!</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>snapshotE</td>
+<td>snapshot!</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>filterRepeatsE</td>
+<td>filter-repeats!</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>calmE</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>blindE</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>timerE</td>
+<td>timer!</td>
+<td></td>
+<td></td>
+</tr>
+</table><h2>TODO</h2>
 
 <ul>
-<li>Functionality to add
-
-<ul>
-<li>switch!.</li>
-<li><del>send! for streams, remove explicit -notify-watchers.</del></li>
-</ul>
-</li>
-<li>Explore
-
-<ul>
-<li>Topological propagation.</li>
-<li>Delayed value propagation and queueing of events.</li>
-<li>Adding a sentinal value instead of explicit propagate! calls.</li>
-<li>Event constructors taking sources.</li>
-<li>Function to add sinks instead of direct set! command.</li>
-<li>Change order of arugments to core functions?</li>
-<li>Time stepping.</li>
-</ul>
-</li>
+<li>Do not relift on same pulse.</li>
+<li>Creation of behaviour generates a new event which updates behaviour.</li>
+<li>Remove outlets.</li>
+<li>Add rest of TODOs from notes.</li>
+<li>Replace set! calls if possible to add better clj compatibility.</li>
+<li>Look into possibility of persistent events or behaviours.</li>
+<li>Should update-fn return pulse explicitly or implicitly?</li>
+<li>Extract priority-map.</li>
+<li>Revisit listeners.</li>
+<li>When sink is removed/added; recompute dependency tree.</li>
 </ul><h2>References</h2>
 
 <ul>
@@ -82,64 +192,7 @@ particular DOM element, such as an input field.</p>
 </li>
 <li>Meyerovich, Guha, Baskin, Cooper, Greenberg, Bromfield,  Krishnamurthi, <a href="http://dl.acm.org/citation.cfm?id=1640091"><em>Flapjax: A Programming Language for Ajax Applications</em></a>
 </li>
-</ul><h2>Examples</h2>
-
-<h3>Elapsed Timer</h3>
-
-<div class="highlight"><pre><span class="p">(</span><span class="kd">defn- </span><span class="nv">timer</span> <span class="p">[]</span>
-  <span class="s">"Generate a timer, and convert the timer into a behaviour."</span>
-  <span class="p">(</span><span class="nb">-&gt; </span><span class="p">(</span><span class="nf">timer!</span> <span class="mi">1000</span> <span class="p">(</span><span class="k">fn </span><span class="p">[]</span> <span class="p">(</span><span class="nf">js/Date.</span><span class="p">)))</span>
-      <span class="p">(</span><span class="nf">map!</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nf">.log</span> <span class="nv">js/console</span> <span class="s">"Timer ticked."</span><span class="p">)</span> <span class="nv">x</span><span class="p">))</span>
-      <span class="p">(</span><span class="nf">hold!</span> <span class="p">(</span><span class="nf">js/Date.</span><span class="p">))))</span>
-
-<span class="p">(</span><span class="kd">defn- </span><span class="nv">reset</span> <span class="p">[</span><span class="nv">timer</span><span class="p">]</span>
-  <span class="s">"Generate a behaviour originating from click events on the reset</span>
-<span class="s">  button.  When clicked, snapshot the current state of the timer."</span>
-  <span class="p">(</span><span class="nb">-&gt; </span><span class="p">(</span><span class="nf">event!</span> <span class="p">(</span><span class="nf">dom/getElement</span> <span class="s">"reset-button"</span><span class="p">)</span> <span class="s">"click"</span><span class="p">)</span>
-      <span class="p">(</span><span class="nf">snapshot!</span> <span class="nv">timer</span><span class="p">)</span>
-      <span class="p">(</span><span class="nf">map!</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nf">.log</span> <span class="nv">js/console</span> <span class="s">"Reset button clicked."</span><span class="p">)</span> <span class="nv">x</span><span class="p">))</span>
-      <span class="p">(</span><span class="nf">hold!</span> <span class="p">(</span><span class="nf">js/Date.</span><span class="p">))))</span>
-
-<span class="p">(</span><span class="kd">defn </span><span class="nv">main</span> <span class="p">[]</span>
-  <span class="s">"Run the elapsed time example."</span>
-
-  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">the-timer</span> <span class="p">(</span><span class="nf">timer</span><span class="p">)</span>
-        <span class="nv">reset-button</span> <span class="p">(</span><span class="nf">reset</span> <span class="nv">the-timer</span><span class="p">)]</span>
-    <span class="p">(</span><span class="nb">-&gt; </span><span class="p">(</span><span class="nf">lift2!</span> <span class="nv">the-timer</span> <span class="nv">reset-button</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">now</span> <span class="nv">click</span><span class="p">]</span> <span class="p">(</span><span class="nb">- </span><span class="nv">now</span> <span class="nv">click</span><span class="p">))</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="p">(</span><span class="nf">insert!</span> <span class="p">(</span><span class="nf">dom/getElement</span> <span class="s">"elapsed"</span><span class="p">))))</span>
-
-  <span class="p">(</span><span class="nf">.log</span> <span class="nv">js/console</span> <span class="s">"Starting the elapsed time example."</span><span class="p">))</span>
-</pre></div>
-
-<h3>Autosave</h3>
-
-<div class="highlight"><pre><span class="p">(</span><span class="kd">defn- </span><span class="nv">build-request</span> <span class="p">[</span><span class="nv">value</span><span class="p">]</span>
-  <span class="s">"Generate a request object."</span>
-  <span class="p">{</span> <span class="ss">:url</span> <span class="s">"/save"</span> <span class="ss">:data</span> <span class="p">{</span> <span class="ss">:value</span> <span class="nv">value</span> <span class="p">}</span> <span class="ss">:method</span> <span class="s">"post"</span> <span class="p">})</span>
-
-<span class="p">(</span><span class="kd">defn- </span><span class="nv">live-content</span> <span class="p">[]</span>
-  <span class="s">"Generate a behaviour for the live content area."</span>
-  <span class="p">(</span><span class="nf">behaviour!</span> <span class="p">(</span><span class="nf">dom/getElement</span> <span class="s">"live-content"</span><span class="p">)</span> <span class="nv">nil</span><span class="p">))</span>
-
-<span class="p">(</span><span class="kd">defn- </span><span class="nv">timer</span> <span class="p">[]</span>
-  <span class="s">"Generate a timer."</span>
-  <span class="p">(</span><span class="nb">-&gt; </span><span class="p">(</span><span class="nf">timer!</span> <span class="mi">10000</span> <span class="p">(</span><span class="k">fn </span><span class="p">[]</span> <span class="p">(</span><span class="nf">js/Date.</span><span class="p">)))</span>
-      <span class="p">(</span><span class="nf">map!</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nf">.log</span> <span class="nv">js/console</span> <span class="s">"Timer ticked."</span><span class="p">)</span> <span class="nv">x</span><span class="p">))))</span>
-
-<span class="p">(</span><span class="kd">defn </span><span class="nv">main</span> <span class="p">[]</span>
-  <span class="s">"Run the autosave example."</span>
-
-  <span class="p">(</span><span class="nb">-&gt; </span><span class="p">(</span><span class="nf">event!</span> <span class="p">(</span><span class="nf">dom/getElement</span> <span class="s">"save-button"</span><span class="p">)</span> <span class="s">"click"</span><span class="p">)</span>
-      <span class="p">(</span><span class="nf">map!</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span> <span class="p">(</span><span class="nf">.log</span> <span class="nv">js/console</span> <span class="s">"Button clicked."</span><span class="p">)</span> <span class="nv">x</span><span class="p">))</span>
-      <span class="p">(</span><span class="nf">merge!</span> <span class="p">(</span><span class="nf">timer</span><span class="p">))</span>
-      <span class="p">(</span><span class="nf">snapshot!</span> <span class="p">(</span><span class="nf">live-content</span><span class="p">))</span>
-      <span class="p">(</span><span class="nf">map!</span> <span class="nv">build-request</span><span class="p">)</span>
-      <span class="p">(</span><span class="nf">requests!</span><span class="p">))</span>
-
-  <span class="p">(</span><span class="nf">.log</span> <span class="nv">js/console</span> <span class="s">"Starting the autosave example."</span><span class="p">))</span>
-</pre></div>
-
-<h2>The Name</h2>
+</ul><h2>The Name</h2>
 
 <ul>
 <li><a href="http://www.youtube.com/watch?v=AZO2_u0jmZk">Shafty, Island Tour, '98, Providence, RI.</a></li>
