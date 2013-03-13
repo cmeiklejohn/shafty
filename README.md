@@ -1,6 +1,6 @@
 # shafty
 
-ClojureScript functional reactive programming library inspired by [Flapjax](http://www.flapjax-lang.com/).  Shafty provides the core abstractions provided by Flapjax for dataflow programming with reactive values, however does not provide the DOM manipulation abstractions provided by Flapjax.  
+ClojureScript functional reactive programming library inspired by [Flapjax](http://www.flapjax-lang.com/).  Shafty provides the core abstractions provided by Flapjax for dataflow programming with reactive values, however does not provide the DOM manipulation abstractions provided by Flapjax.
 
 ## Disclaimer
 
