@@ -173,6 +173,9 @@
 
   (delay! [this interval]
     (let [t (fn [me x] (js/setTimeout
+                         (fn [] (.-value x)) interval))
+          e (event [this] t)]
+      (add-sink! this e) e))
                          (fn [x] (send! me (.-value x))) interval))
           e (event [this] t)]
       (add-sink! this e) e))
