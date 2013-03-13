@@ -38,7 +38,7 @@ mergeE          | merge!            | valueNow     | deref (cljs)
 constantE       | constant!         | changes      | changes!
 bindE           | bind!             | switchB      |
 mapE            | map!              | timerB       | held-timer!
-notE            | not!              | delayB       |
+notE            | not!              | delayB       | delay!
 filterE         | filter!           | sendBehavior |
 onceE           | once!             | liftB        |
 skipFirstE      | skip-first!       | notB         |

@@ -291,6 +291,10 @@
    (Behaviour. state stream (fn [me x] (propagate! me x)) nil)))
 
 (extend-type Behaviour
+  IEventStream
+  (delay! [this interval init]
+    (hold! (delay! (changes! this) interval)))
+
   IEventConversion
   (changes! [this] (.-stream this))
 
