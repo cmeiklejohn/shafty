@@ -51,18 +51,6 @@ calmE           | calm!
 blindE          | blind!
 timerE          | timer!
 
-## TODO
-
-* Do not relift on same pulse.
-* Creation of behaviour generates a new event which updates behaviour.
-* Remove outlets.
-* Add rest of TODOs from notes.
-* Replace set! calls if possible to add better clj compatibility.
-* Look into possibility of persistent events or behaviours.
-* Should update-fn return pulse explicitly or implicitly?
-* Revisit listeners.
-* When sink is removed/added; recompute dependency tree.
-
 ## References
 
 * Elliott, [_Push-Pull Functional Reactive Programming_](http://dl.acm.org/citation.cfm?id=1596643)
