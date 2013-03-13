@@ -30,7 +30,7 @@
       <section>
         <h1>shafty</h1>
 
-<p>ClojureScript functional reactive programming library inspired by <a href="http://www.flapjax-lang.com/">Flapjax</a>.  Shafty provides the core abstractions provided by Flapjax for dataflow programming with reactive values, however does not provide the DOM manipulation abstractions provided by Flapjax.  </p>
+<p>ClojureScript functional reactive programming library inspired by <a href="http://www.flapjax-lang.com/">Flapjax</a>.  Shafty provides the core abstractions provided by Flapjax for dataflow programming with reactive values, however does not provide the DOM manipulation abstractions provided by Flapjax.</p>
 
 <h2>Disclaimer</h2>
 
@@ -72,25 +72,25 @@ particular DOM element, such as an input field.</p>
 <td>sendEvent</td>
 <td>send!</td>
 <td>startsWith</td>
-<td></td>
+<td>hold!</td>
 </tr>
 <tr>
 <td>mergeE</td>
 <td>merge!</td>
 <td>valueNow</td>
-<td></td>
+<td>deref (cljs)</td>
 </tr>
 <tr>
 <td>constantE</td>
 <td>constant!</td>
 <td>changes</td>
-<td></td>
+<td>changes!</td>
 </tr>
 <tr>
 <td>bindE</td>
 <td>bind!</td>
 <td>switchB</td>
-<td></td>
+<td>switch!</td>
 </tr>
 <tr>
 <td>mapE</td>
@@ -102,37 +102,37 @@ particular DOM element, such as an input field.</p>
 <td>notE</td>
 <td>not!</td>
 <td>delayB</td>
-<td></td>
+<td>delay!</td>
 </tr>
 <tr>
 <td>filterE</td>
 <td>filter!</td>
 <td>sendBehavior</td>
-<td></td>
+<td>send!</td>
 </tr>
 <tr>
 <td>onceE</td>
 <td>once!</td>
 <td>liftB</td>
-<td></td>
+<td>lift! / lift2!</td>
 </tr>
 <tr>
 <td>skipFirstE</td>
 <td>skip-first!</td>
 <td>notB</td>
-<td></td>
+<td>not!</td>
 </tr>
 <tr>
 <td>collectE</td>
 <td>collect!</td>
 <td>blindB</td>
-<td></td>
+<td>blind!</td>
 </tr>
 <tr>
 <td>switchE</td>
-<td></td>
+<td>switch!</td>
 <td>calmB</td>
-<td></td>
+<td>calm!</td>
 </tr>
 <tr>
 <td>delayE</td>
@@ -154,13 +154,13 @@ particular DOM element, such as an input field.</p>
 </tr>
 <tr>
 <td>calmE</td>
-<td></td>
+<td>calm!</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td>blindE</td>
-<td></td>
+<td>blind!</td>
 <td></td>
 <td></td>
 </tr>
@@ -180,7 +180,6 @@ particular DOM element, such as an input field.</p>
 <li>Replace set! calls if possible to add better clj compatibility.</li>
 <li>Look into possibility of persistent events or behaviours.</li>
 <li>Should update-fn return pulse explicitly or implicitly?</li>
-<li>Extract priority-map.</li>
 <li>Revisit listeners.</li>
 <li>When sink is removed/added; recompute dependency tree.</li>
 </ul><h2>References</h2>
