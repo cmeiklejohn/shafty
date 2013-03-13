@@ -68,6 +68,7 @@
   (bind! [this value-fn])
   (once! [this])
   (delay! [this interval])
+  (calm! [this interval])
   (merge! [this that])
   (filter! [this filter-fn])
   (collect! [this init combine-fn])
@@ -176,6 +177,16 @@
           e (event [this] f)]
       (add-sink! this e) e))
 
+  (calm! [this interval]
+    (let [acc (atom nil)
+          t (atom nil)
+          f (fn [me x]
+              (swap! acc (fn [] x))
+              (if (nil? t)
+                (js/setTimeout (fn []
+                                 (swap! t (fn [] nil))
+                                 (.-value acc)) interval)))
+          e (event [this] f)]
       (add-sink! this e) e))
 
   (merge! [this that]

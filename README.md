@@ -47,7 +47,7 @@ switchE         |                   | calmB        |
 delayE          | delay!
 snapshotE       | snapshot!
 filterRepeatsE  | filter-repeats!
-calmE           |
+calmE           | calm!
 blindE          |
 timerE          | timer!
 
