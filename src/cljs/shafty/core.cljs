@@ -298,6 +298,9 @@
   (delay! [this interval init]
     (hold! (delay! (changes! this) interval) init))
 
+  (calm! [this interval init]
+    (hold! (calm! (changes! this) interval) init))
+
   (blind! [this interval init]
     (hold! (blind! (changes! this) interval) init))
 
