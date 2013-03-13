@@ -15,23 +15,10 @@
   :hooks [leiningen.cljsbuild]
   :cljsbuild
     {:builds
-     [{:source-paths ["test/integration"],
-       :id "test",
-       :compiler
-       {:pretty-print true,
-        :output-to "resources/private/integration.js",
-        :optimizations :whitespace}}
-      {:source-paths ["src/cljs"],
+     [{:source-paths ["src/cljs"],
        :id "core",
        :compiler
        {:pretty-print true,
         :output-to "resources/private/core.js",
         :optimizations :whitespace}}
-      {:source-paths ["src/cljs"],
-       :id "examples",
-       :compiler
-       {:pretty-print true,
-        :output-to "resources/public/examples.js",
-        :optimizations :whitespace}}],
-     :test-commands
-      {"integration" ["phantomjs" "test/integration/runner.coffee"]}})
+      ]})
