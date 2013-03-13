@@ -66,6 +66,7 @@
   (not! [this])
   (map! [this map-fn])
   (bind! [this value-fn])
+  (switch! [this])
   (once! [this])
   (delay! [this interval])
   (calm! [this interval])
@@ -155,6 +156,9 @@
   (map! [this map-fn]
     (let [e (event [this] (fn [me x] (apply map-fn [(.-value x)])))]
       (add-sink! this e) e))
+
+  (switch! [this]
+    (bind! this (fn [x])))
 
   (bind! [this value-fn]
     (let [prev  (atom false)

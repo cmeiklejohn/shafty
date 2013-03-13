@@ -43,7 +43,7 @@ filterE         | filter!           | sendBehavior |
 onceE           | once!             | liftB        |
 skipFirstE      | skip-first!       | notB         |
 collectE        | collect!          | blindB       |
-switchE         |                   | calmB        |
+switchE         | switch!           | calmB        |
 delayE          | delay!
 snapshotE       | snapshot!
 filterRepeatsE  | filter-repeats!
