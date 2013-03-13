@@ -298,6 +298,9 @@
   (delay! [this interval init]
     (hold! (delay! (changes! this) interval) init))
 
+  (blind! [this interval init]
+    (hold! (blind! (changes! this) interval) init))
+
   IEventConversion
   (changes! [this] (.-stream this))
 

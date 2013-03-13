@@ -42,7 +42,7 @@ notE            | not!              | delayB       | delay!
 filterE         | filter!           | sendBehavior |
 onceE           | once!             | liftB        |
 skipFirstE      | skip-first!       | notB         | not!
-collectE        | collect!          | blindB       |
+collectE        | collect!          | blindB       | blind!
 switchE         | switch!           | calmB        |
 delayE          | delay!
 snapshotE       | snapshot!
