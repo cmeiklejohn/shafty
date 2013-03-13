@@ -293,7 +293,7 @@
 (extend-type Behaviour
   IEventStream
   (delay! [this interval init]
-    (hold! (delay! (changes! this) interval)))
+    (hold! (delay! (changes! this) interval) init))
 
   IEventConversion
   (changes! [this] (.-stream this))
