@@ -39,7 +39,7 @@ constantE       | constant!         | changes      | changes!
 bindE           | bind!             | switchB      |
 mapE            | map!              | timerB       | held-timer!
 notE            | not!              | delayB       | delay!
-filterE         | filter!           | sendBehavior |
+filterE         | filter!           | sendBehavior | send!
 onceE           | once!             | liftB        |
 skipFirstE      | skip-first!       | notB         | not!
 collectE        | collect!          | blindB       | blind!
