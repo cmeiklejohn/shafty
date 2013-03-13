@@ -41,7 +41,7 @@ mapE            | map!              | timerB       | held-timer!
 notE            | not!              | delayB       | delay!
 filterE         | filter!           | sendBehavior |
 onceE           | once!             | liftB        |
-skipFirstE      | skip-first!       | notB         |
+skipFirstE      | skip-first!       | notB         | not!
 collectE        | collect!          | blindB       |
 switchE         | switch!           | calmB        |
 delayE          | delay!

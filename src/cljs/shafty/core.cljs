@@ -292,6 +292,9 @@
 
 (extend-type Behaviour
   IEventStream
+  (not! [this init]
+    (hold! (not! (changes! this)) init))
+
   (delay! [this interval init]
     (hold! (delay! (changes! this) interval) init))
 
