@@ -48,7 +48,7 @@ delayE          | delay!
 snapshotE       | snapshot!
 filterRepeatsE  | filter-repeats!
 calmE           | calm!
-blindE          |
+blindE          | blind!
 timerE          | timer!
 
 ## TODO

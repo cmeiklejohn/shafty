@@ -69,6 +69,7 @@
   (once! [this])
   (delay! [this interval])
   (calm! [this interval])
+  (blind! [this interval])
   (merge! [this that])
   (filter! [this filter-fn])
   (collect! [this init combine-fn])
@@ -173,7 +174,9 @@
                         false)))))
 
   (delay! [this interval]
-    (let [f (fn [me x] (js/setTimeout (fn [] (.-value x)) interval))
+    (let [f (fn [me x] (js/setTimeout
+                         (fn [] (.-value x)) interval)
+              shafty.core.Event/SENTINEL)
           e (event [this] f)]
       (add-sink! this e) e))
 
@@ -185,7 +188,18 @@
               (if (nil? t)
                 (js/setTimeout (fn []
                                  (swap! t (fn [] nil))
-                                 (.-value acc)) interval)))
+                                 (.-value acc)) interval))
+              shafty.core.Event/SENTINEL)
+          e (event [this] f)]
+      (add-sink! this e) e))
+
+  (blind! [this interval]
+    (let [last-sent (atom nil)
+          f (fn [me x] (let [current-time (js/Date.)]
+                         (if (> (- current-time last-sent) interval) 
+                           (do
+                             (swap! last-sent (fn [] current-time)) (.-value x))
+                           (shafty.core.Event/SENTINEL))))
           e (event [this] f)]
       (add-sink! this e) e))
 
