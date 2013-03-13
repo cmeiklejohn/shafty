@@ -40,7 +40,7 @@ bindE           | bind!             | switchB      |
 mapE            | map!              | timerB       | held-timer!
 notE            | not!              | delayB       | delay!
 filterE         | filter!           | sendBehavior | send!
-onceE           | once!             | liftB        |
+onceE           | once!             | liftB        | lift! / lift2!
 skipFirstE      | skip-first!       | notB         | not!
 collectE        | collect!          | blindB       | blind!
 switchE         | switch!           | calmB        | calm!
