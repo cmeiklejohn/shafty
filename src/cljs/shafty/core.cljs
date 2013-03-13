@@ -304,6 +304,9 @@
   (blind! [this interval init]
     (hold! (blind! (changes! this) interval) init))
 
+  (switch! [this inital]
+    (hold! (switch! (changes! this)) init))
+
   IEventConversion
   (changes! [this] (.-stream this))
 

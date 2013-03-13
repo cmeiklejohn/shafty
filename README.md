@@ -36,7 +36,7 @@ F.Event         | shafty.core.Event | F.Behavior   | shafty.core.Behaviour
 sendEvent       | send!             | startsWith   | hold!
 mergeE          | merge!            | valueNow     | deref (cljs)
 constantE       | constant!         | changes      | changes!
-bindE           | bind!             | switchB      |
+bindE           | bind!             | switchB      | switch!
 mapE            | map!              | timerB       | held-timer!
 notE            | not!              | delayB       | delay!
 filterE         | filter!           | sendBehavior | send!
