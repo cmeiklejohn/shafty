@@ -23,11 +23,6 @@
   (remove-sink! [this that])
   (propagate! [this value]))
 
-(defprotocol IRenderable
-  "Renders content into the DOM from streams."
-  (insert! [this element])
-  (add-outlet! [this that]))
-
 (defprotocol IBehaviourConversion
   "Convert an event stream into a behaviour initializing with a default
   value."
@@ -337,22 +332,7 @@
   (lift2! [this that lift-fn initial]
     (-> (merge! (changes! this) (changes! that))
         (map! (fn [] (apply lift-fn [@this @that])))
-        (hold! initial)))
-
-  IRenderable
-  (insert! [this element]
-    (-> (add-outlet! this element)
-        (propagate! (deref this))) this)
-
-  (add-outlet! [this that]
-    (set! (.-outlets this) (conj (.-outlets this) that)) this))
-
-(extend-type js/HTMLElement
-  IObservable
-  (behaviour! [this initial]
-    (-> (events! this ["change" "keyup"])
-        (hold! initial)
-        (insert! this))))
+        (hold! initial))))
 
 ;;
 ;; Priority Map
