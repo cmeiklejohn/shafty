@@ -33,7 +33,7 @@ The combinators below appear in the order of the appearance of each in the Flapj
 
 F.Event         | shafty.core.Event | F.Behavior   | shafty.core.Behaviour
 --------------- | ----------------- | ------------ | ---------------------
-sendEvent       | send!             | startsWith   |
+sendEvent       | send!             | startsWith   | hold!
 mergeE          | merge!            | valueNow     |
 constantE       | constant!         | changes      | changes!
 bindE           | bind!             | switchB      |
