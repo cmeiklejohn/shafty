@@ -59,6 +59,15 @@
   "Convert a behaviour back to an event stream."
   (changes! [this]))
 
+(defprotocol IBehaviourGenerator
+  "Convert a behaviour back to an event stream and generate new
+  behaviours."
+  (not! [this init])
+  (delay! [this interval init])
+  (calm! [this interval init])
+  (blind! [this interval init])
+  (switch! [this init]))
+
 (defprotocol IEventStream
   "The composable stream interface provides a series of filtering and
   selection methods for working with objects as they enter and leave the
@@ -291,7 +300,7 @@
    (Behaviour. state stream (fn [me x] (propagate! me x)) nil)))
 
 (extend-type Behaviour
-  IEventStream
+  IBehaviourGenerator
   (not! [this init]
     (hold! (not! (changes! this)) init))
 
