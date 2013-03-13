@@ -313,7 +313,7 @@
   (blind! [this interval init]
     (hold! (blind! (changes! this) interval) init))
 
-  (switch! [this inital]
+  (switch! [this init]
     (hold! (switch! (changes! this)) init))
 
   IEventConversion
