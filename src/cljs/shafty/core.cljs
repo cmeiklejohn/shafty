@@ -26,7 +26,7 @@
 (defprotocol IBehaviourConversion
   "Convert an event stream into a behaviour initializing with a default
   value."
-  (hold! [this init]))
+  (-hold! [this init]))
 
 (defprotocol ILiftable
   "Provide a mechanism for lifting functions onto behaviours."
@@ -100,13 +100,17 @@
   "Collect values over an event stream."
   (-collect! coll f v))
 
+(defn hold! [v b]
+  "Convert an event stream to a behaviour."
+  (-hold! b v))
+
 (defn lift! [f & bs]
   "Lift a funciton on a behaviour."
   (let [flat-bs    (flatten (vec bs))
         new-stream (reduce (fn [acc x] (merge! acc x)) (map changes! bs))]
     (->
       (-map! new-stream (fn [] (apply f (doall (map deref flat-bs)))))
-      (hold! nil))))
+      (-hold! nil))))
 
 ;;
 ;; Pulses
@@ -137,7 +141,7 @@
 
 (extend-type Event
   IBehaviourConversion
-  (hold! [this initial]
+  (-hold! [this initial]
     (let [b (behaviour initial this)]
       (set! (.-sinks this) (conj (.-sinks this) b)) b))
 
@@ -325,19 +329,19 @@
 (extend-type Behaviour
   IBehaviourGenerator
   (not! [this init]
-    (hold! (not! (changes! this)) init))
+    (-hold! (not! (changes! this)) init))
 
   (delay! [this interval init]
-    (hold! (delay! (changes! this) interval) init))
+    (-hold! (delay! (changes! this) interval) init))
 
   (calm! [this interval init]
-    (hold! (calm! (changes! this) interval) init))
+    (-hold! (calm! (changes! this) interval) init))
 
   (blind! [this interval init]
-    (hold! (blind! (changes! this) interval) init))
+    (-hold! (blind! (changes! this) interval) init))
 
   (switch! [this init]
-    (hold! (switch! (changes! this)) init))
+    (-hold! (switch! (changes! this)) init))
 
   IEventConversion
   (changes! [this] (.-stream this))
@@ -354,7 +358,7 @@
 
   ILiftable
   (lift! [this lift-fn]
-    (-> (changes! this) (-map! lift-fn) (hold! nil))))
+    (-> (changes! this) (-map! lift-fn) (-hold! nil))))
 
 ;;
 ;; Priority Map
