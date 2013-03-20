@@ -30,10 +30,7 @@
 
 (defprotocol ILiftable
   "Provide a mechanism for lifting functions onto behaviours."
-  (lift! [this lift-fn])
-  (lift2!
-    [this that lift-fn]
-    [this that lift-fn initial]))
+  (lift! [this lift-fn]))
 
 (defprotocol IObservable
   "Generate events or behaviours from browser elements or events."
@@ -103,6 +100,14 @@
   "Collect values over an event stream."
   (-collect! coll f v))
 
+(defn lift! [f & bs]
+  "Lift a funciton on a behaviour."
+  (let [flat-bs    (flatten (vec bs))
+        new-stream (reduce (fn [acc x] (merge! acc x)) (map changes! bs))]
+    (->
+      (-map! new-stream (fn [] (apply f (doall (map deref flat-bs)))))
+      (hold! nil))))
+
 ;;
 ;; Pulses
 ;;
@@ -164,6 +169,9 @@
   (remove-sink! [this that]
     (set! (.-sinks this) (vec (filter (fn [x] (= x that)) (.-sinks this))))
     this)
+
+  IEventConversion
+  (changes! [this] this)
 
   IRequestable
   (requests! [this]
@@ -346,13 +354,7 @@
 
   ILiftable
   (lift! [this lift-fn]
-    (-> (changes! this) (-map! lift-fn) (hold! nil)))
-  (lift2! [this that lift-fn]
-    (lift2! this that lift-fn nil))
-  (lift2! [this that lift-fn initial]
-    (-> (merge! (changes! this) (changes! that))
-        (-map! (fn [] (apply lift-fn [@this @that])))
-        (hold! initial))))
+    (-> (changes! this) (-map! lift-fn) (hold! nil))))
 
 ;;
 ;; Priority Map
