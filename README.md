@@ -34,13 +34,13 @@ The combinators below appear in the order of the appearance of each in the Flapj
 F.Event         | shafty.core.Event | F.Behavior   | shafty.core.Behaviour
 --------------- | ----------------- | ------------ | ---------------------
 sendEvent       | send!             | startsWith   | hold!
-mergeE          | merge!            | valueNow     | deref (cljs)
+mergeE          | merge!            | valueNow     | cljs.core.deref
 constantE       | constant!         | changes      | changes!
 bindE           | bind!             | switchB      | switch!
 mapE            | map!              | timerB       | timer! / hold!
 notE            | not!              | delayB       | delay!
 filterE         | filter!           | sendBehavior | send!
-onceE           | once!             | liftB        | lift! / lift2!
+onceE           | once!             | liftB        | lift!
 skipFirstE      | skip-first!       | notB         | not!
 collectE        | collect!          | blindB       | blind!
 switchE         | switch!           | calmB        | calm!
