@@ -88,15 +88,19 @@
 ;;
 
 (defn map! [f coll]
+  "Map a function over an event stream."
   (-map! coll f))
 
 (defn bind! [f coll]
+  "Bind a function to an event stream."
   (-bind! coll f))
 
 (defn filter! [pred coll]
+  "Filter values over an event stream."
   (-filter! coll pred))
 
 (defn collect! [f coll v]
+  "Collect values over an event stream."
   (-collect! coll f v))
 
 ;;
