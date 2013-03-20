@@ -7,7 +7,7 @@
 ;; this license. You must not remove this notice, or any other, from
 ;; this software.
 ;;
-(defproject shafty "0.0.1-SNAPSHOT"
+(defproject shafty "0.0.2-SNAPSHOT"
   :description "ClojureScript functional reactive programming library."
   :url "https://github.com/cmeiklejohn/shafty"
   :license {:name "Eclipse Public License - v 1.0"
