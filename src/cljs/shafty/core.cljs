@@ -504,4 +504,3 @@
   ([interval value-fn]
    (let [e (event nil (fn [me x] (.-value x)))]
      (js/setInterval (fn [] (send! e (value-fn))) interval) e)))
-
