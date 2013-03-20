@@ -68,20 +68,36 @@
   selection methods for working with objects as they enter and leave the
   event stream."
   (not! [this])
-  (map! [this map-fn])
-  (bind! [this value-fn])
-  (switch! [this])
+  (-map! [this map-fn])
+  (-bind! [this value-fn])
   (once! [this])
+  (switch! [this])
   (delay! [this interval])
   (calm! [this interval])
   (blind! [this interval])
   (merge! [this that])
-  (filter! [this filter-fn])
-  (collect! [this init combine-fn])
+  (-filter! [this filter-fn])
+  (-collect! [this combine-fn init])
   (snapshot! [this that])
   (constant! [this value])
   (skip-first! [this])
   (filter-repeats! [this initial]))
+
+;;
+;; Helpers to normalize the API.
+;;
+
+(defn map! [f coll]
+  (-map! coll f))
+
+(defn bind! [f coll]
+  (-bind! coll f))
+
+(defn filter! [pred coll]
+  (-filter! coll pred))
+
+(defn collect! [f coll v]
+  (-collect! coll f v))
 
 ;;
 ;; Pulses
@@ -155,16 +171,16 @@
 
   IEventStream
   (not! [this]
-    (map! this (fn [x] (not x))))
+    (-map! this (fn [x] (not x))))
 
-  (map! [this map-fn]
+  (-map! [this map-fn]
     (let [e (event [this] (fn [me x] (apply map-fn [(.-value x)])))]
       (add-sink! this e) e))
 
   (switch! [this]
-    (bind! this (fn [x])))
+    (-bind! this (fn [x])))
 
-  (bind! [this value-fn]
+  (-bind! [this value-fn]
     (let [prev  (atom false)
           out   (event [] (fn [me x] x))
           in    (event [this] (fn [me x]
@@ -176,7 +192,7 @@
 
   (once! [this]
     (let [done (atom false)]
-      (filter! this (fn [x]
+      (-filter! this (fn [x]
                       (if (false? @done)
                         (swap! done (fn [] true))
                         false)))))
@@ -216,7 +232,7 @@
           e (event s (fn [me x] (.-value x)))]
       (doall (map (fn [x] (add-sink! x e)) s)) e))
 
-  (filter! [this filter-fn]
+  (-filter! [this filter-fn]
     (let [e (event [this] (fn [me x]
                             (let [v (apply filter-fn [(.-value x)])]
                               (if (true? v)
@@ -224,27 +240,27 @@
                                 shafty.core.Event/SENTINEL))))]
       (add-sink! this e) e))
 
-  (collect! [this init combine-fn]
+  (-collect! [this combine-fn init]
     (let [acc (atom init)]
-      (map! this (fn [x] (swap! acc (fn [] (combine-fn x @acc)))))))
+      (-map! this (fn [x] (swap! acc (fn [] (combine-fn x @acc)))))))
 
   (snapshot! [this that]
     (let [e (event [this] (fn [me x] (deref that)))]
       (add-sink! this e) e))
 
   (constant! [this value]
-    (map! this (fn [x] value)))
+    (-map! this (fn [x] value)))
 
   (skip-first! [this]
     (let [skipped (atom false)]
-      (filter! this (fn [x]
+      (-filter! this (fn [x]
                       (if (false? @skipped)
                         (swap! skipped (fn [] true)) false
                         true)))))
 
   (filter-repeats! [this initial]
     (let [prev (atom initial)]
-      (filter! this (fn [x]
+      (-filter! this (fn [x]
                       (if (not (= @prev x))
                         (swap! prev (fn [] x)) true
                         false))))))
@@ -326,12 +342,12 @@
 
   ILiftable
   (lift! [this lift-fn]
-    (-> (changes! this) (map! lift-fn) (hold! nil)))
+    (-> (changes! this) (-map! lift-fn) (hold! nil)))
   (lift2! [this that lift-fn]
     (lift2! this that lift-fn nil))
   (lift2! [this that lift-fn initial]
     (-> (merge! (changes! this) (changes! that))
-        (map! (fn [] (apply lift-fn [@this @that])))
+        (-map! (fn [] (apply lift-fn [@this @that])))
         (hold! initial))))
 
 ;;
