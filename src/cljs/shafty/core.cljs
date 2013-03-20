@@ -501,13 +501,3 @@
    (let [e (event nil (fn [me x] (.-value x)))]
      (js/setInterval (fn [] (send! e (value-fn))) interval) e)))
 
-(defn held-timer!
-  "Generate a new timer at a given interval, and bind to a new event
-  stream returned as a behaviour representing samples of the event
-  stream."
-  ([interval]
-   (-> (timer! interval #(js/Date.))
-       (hold! (js/Date.))))
-  ([interval value-fn]
-    (-> (timer! interval value-fn)
-        (hold! (value-fn)))))

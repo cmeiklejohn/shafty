@@ -37,7 +37,7 @@ sendEvent       | send!             | startsWith   | hold!
 mergeE          | merge!            | valueNow     | deref (cljs)
 constantE       | constant!         | changes      | changes!
 bindE           | bind!             | switchB      | switch!
-mapE            | map!              | timerB       | held-timer!
+mapE            | map!              | timerB       | timer! / hold!
 notE            | not!              | delayB       | delay!
 filterE         | filter!           | sendBehavior | send!
 onceE           | once!             | liftB        | lift! / lift2!
