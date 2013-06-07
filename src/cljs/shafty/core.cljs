@@ -204,6 +204,7 @@
                                   (remove-sink! @prev out))
                                 (swap! prev (add-sink! (value-fn x) out))
                                 shafty.core.Event/SENTINEL))]
+      (add-sink! this in)
       out))
 
   (once! [this]
