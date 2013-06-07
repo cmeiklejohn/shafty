@@ -171,7 +171,7 @@
     this)
 
   (remove-sink! [this that]
-    (set! (.-sinks this) (vec (filter (fn [x] (= x that)) (.-sinks this))))
+    (set! (.-sinks this) (vec (remove (fn [x] (= x that)) (.-sinks this))))
     this)
 
   IEventConversion
