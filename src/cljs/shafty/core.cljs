@@ -171,7 +171,7 @@
     this)
 
   (remove-sink! [this that]
-    (set! (.-sinks this) (vec (filter (fn [x] (= x that)) (.-sinks this))))
+    (set! (.-sinks this) (vec (remove (fn [x] (= x that)) (.-sinks this))))
     this)
 
   IEventConversion
@@ -204,6 +204,7 @@
                                   (remove-sink! @prev out))
                                 (swap! prev (add-sink! (value-fn x) out))
                                 shafty.core.Event/SENTINEL))]
+      (add-sink! this in)
       out))
 
   (once! [this]
